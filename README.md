@@ -1,59 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧵 The Handmade Haven — Stitch & Bloom
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> A full-stack handmade embroidery e-commerce shop built with Laravel 12
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-12-FF6B6B?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.4-4ECDC4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Twilio](https://img.shields.io/badge/Twilio-OTP%20SMS-F22F46?style=for-the-badge&logo=twilio&logoColor=white)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📖 About
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Stitch & Bloom** is a handmade embroidery shop where customers can browse and buy hoops, pillowcases, sofa covers, and custom embroidery. Built as a beginner Laravel project — every feature was learned and built from scratch.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## ✨ Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🛍️ Shop
+- Product listings with category filters
+- Product detail page with images, tags, stock status
+- Shopping cart with add/remove and quantity controls
+- Checkout with stock auto-decrement
 
-## Laravel Sponsors
+### 🔐 Authentication
+- **Phone OTP login** — customers get a real SMS via Twilio
+- **Email + Password login** — for admin accounts
+- Auto-register new customers on first OTP login
+- Single login modal accessible from navbar AND footer
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 👤 User Dashboard
+- Order history and total spending
+- Welcome coupon (STITCH10 — 10% off first order)
+- Edit profile name
 
-### Premium Partners
+### ⚙️ Admin Dashboard
+- Add products with image upload, emoji, color themes
+- One-click restock (+5 units)
+- Delete products
+- Live stats — total products, orders, revenue
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🛠️ Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 12, PHP 8.4 |
+| Frontend | Blade Templates, Custom CSS |
+| Database | MySQL |
+| Auth | Laravel Auth + Twilio SMS OTP |
+| Storage | Laravel Storage (product images) |
+| Fonts | Playfair Display + Nunito |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Getting Started
 
-## Security Vulnerabilities
+### Prerequisites
+- PHP 8.4+
+- Composer
+- MySQL
+- Twilio account (free trial works)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Installation
 
-## License
+```bash
+# 1. Clone the repo
+git clone https://github.com/YOUR_USERNAME/the-handmade-haven.git
+cd the-handmade-haven
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 2. Install dependencies
+composer install
+
+# 3. Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configure .env (database + Twilio credentials)
+
+# 5. Run migrations and seed
+php artisan migrate:fresh
+php artisan db:seed --class=AdminSeeder
+php artisan db:seed --class=ProductSeeder
+
+# 6. Link storage for images
+php artisan storage:link
+
+# 7. Start server
+php artisan serve
+```
+
+Visit: `http://127.0.0.1:8000`
+
+---
+
+## ⚙️ Environment Variables
+
+```env
+DB_DATABASE=stitch_bloom
+DB_USERNAME=root
+DB_PASSWORD=
+
+SESSION_DRIVER=file
+
+TWILIO_SID=ACxxxxxxxxxxxxxxxxx
+TWILIO_TOKEN=your_auth_token
+TWILIO_FROM=+1234567890
+
+APP_ENV=local   # Shows OTP on screen for local testing
+```
+
+> 💡 When `APP_ENV=local`, the OTP is shown on screen — no Twilio needed for testing!
+
+---
+
+## 🔑 Default Admin Login
+
+| Field | Value |
+|---|---|
+| Email | `admin@stitchandbloom.com` |
+| Password | `Admin@1234` |
+
+> ⚠️ Change the password after first login!
+
+---
+
+## 📁 Project Structure
+
+```
+app/
+  Http/Controllers/   → Auth, Product, Order, UserDashboard
+  Http/Middleware/    → AdminMiddleware
+  Models/             → User, Product, Order, OrderItem
+  Services/           → TwilioService
+database/
+  migrations/         → All table schemas
+  seeders/            → AdminSeeder, ProductSeeder
+resources/views/
+  layouts/            → app.blade.php (main layout)
+  components/         → login-modal, product-card
+  user/               → dashboard
+  admin.blade.php
+routes/
+  web.php             → All routes
+```
+
+---
+
+## 📚 What I Learned
+
+- Laravel MVC architecture
+- Database design and Eloquent ORM
+- Role-based authentication with middleware
+- Real SMS OTP with Twilio API
+- File uploads and Laravel storage
+- Blade templating — layouts, components, slots
+- AJAX calls from Blade to Laravel backend
+- Session management and CSRF protection
+
+---
+
+## 🌸 Made with love
+
+> Handmade embroidery deserves a handmade website. Built stitch by stitch. 🧵
