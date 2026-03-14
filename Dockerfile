@@ -26,14 +26,8 @@ RUN chmod -R 777 storage bootstrap/cache
 EXPOSE 8080
 
 CMD sh -c "php artisan config:clear && \
-    echo '✅ Config cleared' && \
     php artisan migrate --force 2>&1 && \
-    echo '✅ Migrations done' && \
     php artisan db:seed --class=AdminSeeder --force 2>&1 && \
-    echo '✅ Admin seeded' && \
     php artisan db:seed --class=ProductSeeder --force 2>&1 && \
-    echo '✅ Products seeded' && \
     php artisan storage:link 2>&1 && \
-    echo '✅ Storage linked' && \
-    echo '✅ Starting server...' && \
-    php -S 0.0.0.0:8080 -t public 2>&1"
+    php -S 0.0.0.0:${PORT:-8080} -t public"
