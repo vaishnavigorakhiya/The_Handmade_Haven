@@ -9,16 +9,18 @@ use Illuminate\Support\Facades\Log;
 
 class TwilioService
 {
-    protected Client $client;
+    protected ?Client $client = null;
     protected string $from;
 
     public function __construct()
     {
-        $this->client = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-        $this->from = config('services.twilio.from');
+        $sid   = config('services.twilio.sid');
+        $token = config('services.twilio.token');
+        $this->from = config('services.twilio.from', '+10000000000');
+
+        if ($sid && $token && $sid !== 'test') {
+            $this->client = new Client($sid, $token);
+        }
     }
 
     /**
@@ -26,18 +28,18 @@ class TwilioService
      */
     public function sendOtp(string $phone, string $otp): bool
     {
-        try {
-            // Ensure phone has country code
-            $phone = $this->formatPhone($phone);
+        if (!$this->client) {
+            Log::info("DEV OTP for {$phone}: {$otp}");
+            return false;
+        }
 
+        try {
+            $phone = $this->formatPhone($phone);
             $this->client->messages->create($phone, [
                 'from' => $this->from,
-                'body' => "Your Stitch & Bloom OTP is: {$otp}\nValid for 10 minutes. Do not share this code.",
+                'body' => "Your Stitch & Bloom OTP is: {$otp}. Valid for 10 minutes.",
             ]);
-
-            Log::info("OTP sent to {$phone}");
             return true;
-
         } catch (Exception $e) {
             Log::error("Twilio error: " . $e->getMessage());
             return false;
