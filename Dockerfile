@@ -25,10 +25,15 @@ RUN chmod -R 777 storage bootstrap/cache
 # Expose port
 EXPOSE 8080
 
-# Start script
 CMD sh -c "php artisan config:clear && \
-    php artisan migrate --force && \
-    php artisan db:seed --class=AdminSeeder --force && \
-    php artisan db:seed --class=ProductSeeder --force && \
-    php artisan storage:link && \
-    php -S 0.0.0.0:8080 -t public"
+    echo '✅ Config cleared' && \
+    php artisan migrate --force 2>&1 && \
+    echo '✅ Migrations done' && \
+    php artisan db:seed --class=AdminSeeder --force 2>&1 && \
+    echo '✅ Admin seeded' && \
+    php artisan db:seed --class=ProductSeeder --force 2>&1 && \
+    echo '✅ Products seeded' && \
+    php artisan storage:link 2>&1 && \
+    echo '✅ Storage linked' && \
+    echo '✅ Starting server...' && \
+    php -S 0.0.0.0:8080 -t public 2>&1"
