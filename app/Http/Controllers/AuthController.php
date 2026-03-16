@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -26,7 +27,6 @@ class AuthController extends Controller
                 ? redirect()->route('admin.dashboard')
                 : redirect()->route('user.dashboard');
         }
-        // Redirect to home and open modal via JS
         return redirect()->route('home')->with('open_login_modal', true);
     }
 
@@ -40,29 +40,32 @@ class AuthController extends Controller
         $isPhone    = preg_match('/^[0-9]{10,15}$/', preg_replace('/\D/', '', $identifier));
 
         if (!$isEmail && !$isPhone) {
-            return response()->json(['error' => 'Please enter a valid email or 10-digit phone number.']);
+            return response()->json(['error' => 'Please enter a valid email address or 10-digit phone number.']);
         }
 
-        // ── EMAIL: Admin or registered user with password ──
+        // ── EMAIL path ──
         if ($isEmail) {
             $user = User::where('email', $identifier)->first();
+
             if (!$user) {
-                return response()->json(['error' => 'No account found with this email. Contact admin.']);
+                // New email — prompt registration
+                session(['auth_register_email' => $identifier]);
+                return response()->json(['step' => 'register']);
             }
+
+            // Existing email user — go to password
             session(['auth_identifier' => $identifier]);
             return response()->json(['step' => 'password']);
         }
 
-        // ── PHONE: Customer OTP login ──
+        // ── PHONE: Customer OTP login / auto-register ──
         $phone = preg_replace('/\D/', '', $identifier);
 
-        // Create account if new user
         $user = User::firstOrCreate(
             ['phone' => $phone],
             ['name' => 'Customer', 'role' => 'customer', 'is_verified' => false]
         );
 
-        // Generate and send OTP
         $otp  = $user->generateOtp();
         $sent = $this->twilio->sendOtp($phone, $otp);
 
@@ -84,6 +87,10 @@ class AuthController extends Controller
         $request->validate(['password' => 'required|string']);
 
         $identifier = session('auth_identifier');
+        if (!$identifier) {
+            return response()->json(['error' => 'Session expired. Please start again.']);
+        }
+
         $user = User::where('email', $identifier)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -120,6 +127,53 @@ class AuthController extends Controller
         $user->update(['is_verified' => true]);
         Auth::login($user, true);
         session()->forget('auth_phone');
+
+        return response()->json(['redirect' => route('user.dashboard')]);
+    }
+
+    // ── STEP 2c: Register new email user — returns JSON ──
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'                  => 'required|string|min:2|max:100',
+            'email'                 => 'required|email|unique:users,email',
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string',
+        ], [
+            'name.required'              => 'Please enter your full name.',
+            'name.min'                   => 'Name must be at least 2 characters.',
+            'email.required'             => 'Email address is required.',
+            'email.email'                => 'Please enter a valid email address.',
+            'email.unique'               => 'This email is already registered. Please login instead.',
+            'password.required'          => 'Please create a password.',
+            'password.min'               => 'Password must be at least 8 characters.',
+            'password.confirmed'         => 'Passwords do not match.',
+            'password_confirmation.required' => 'Please confirm your password.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray(),
+                'error'  => $validator->errors()->first(),
+            ], 422);
+        }
+
+        // Double-check the email from session matches what was submitted
+        $sessionEmail = session('auth_register_email');
+        if ($sessionEmail && strtolower($sessionEmail) !== strtolower($request->email)) {
+            // Allow — the email in the form is canonical
+        }
+
+        $user = User::create([
+            'name'        => $request->name,
+            'email'       => strtolower(trim($request->email)),
+            'password'    => Hash::make($request->password),
+            'role'        => 'customer',
+            'is_verified' => true,
+        ]);
+
+        session()->forget('auth_register_email');
+        Auth::login($user, true);
 
         return response()->json(['redirect' => route('user.dashboard')]);
     }
