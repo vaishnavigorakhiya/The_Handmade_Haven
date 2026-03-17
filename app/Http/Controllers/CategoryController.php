@@ -31,7 +31,7 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $name = $category->name;
-        $category->delete(); // booted() handles reassigning products
+        $category->delete();
 
         return redirect()->route('admin.dashboard')
             ->with('success', '🗑 Category "' . $name . '" removed.');

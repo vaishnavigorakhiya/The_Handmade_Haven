@@ -5,7 +5,8 @@
 <style>
   .cart-container { max-width: 800px; margin: 0 auto; }
   .cart-item { background: white; border: 3px solid var(--dark); border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 20px; margin-bottom: 16px; box-shadow: 4px 4px 0 var(--dark); }
-  .cart-item-emoji { font-size: 3rem; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+  .cart-item-emoji { font-size: 3rem; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 12px; overflow: hidden; }
+  .cart-item-emoji img { width: 100%; height: 100%; object-fit: cover; }
   .cart-item-info { flex: 1; }
   .cart-item-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
   .cart-item-price { color: var(--coral); font-weight: 800; font-size: 1rem; }
@@ -19,13 +20,14 @@
   .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-weight: 700; }
   .summary-row.total { border-top: 3px solid var(--dark); margin-top: 8px; padding-top: 18px; font-size: 1.3rem; font-family: 'Playfair Display', serif; }
   .summary-row.total span:last-child { color: var(--coral); }
-  .checkout-btn { width: 100%; padding: 18px; background: var(--teal); color: var(--dark); border: 3px solid var(--dark); border-radius: 50px; font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 5px 5px 0 var(--dark); transition: all 0.15s; }
-  .checkout-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--dark); }
+  .checkout-btn { width: 100%; padding: 18px; background: var(--teal); color: var(--dark); border: 3px solid var(--dark); border-radius: 50px; font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 5px 5px 0 var(--dark); transition: all 0.15s; text-decoration: none; display: block; text-align: center; }
+  .checkout-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--dark); color: var(--dark); }
   .free-ship-note { font-size: 0.8rem; color: var(--mid); font-weight: 700; margin-top: -8px; }
   .empty-cart { text-align: center; padding: 80px 20px; }
   .empty-cart .big-emoji { font-size: 5rem; margin-bottom: 20px; }
   .empty-cart h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 12px; }
   .empty-cart p { color: var(--mid); font-weight: 600; margin-bottom: 28px; }
+  .login-notice { background: #FFF9E8; border: 2.5px dashed var(--gold); border-radius: 14px; padding: 16px 20px; margin-top: 16px; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 0.9rem; }
 </style>
 @endpush
 
@@ -53,7 +55,13 @@
       @foreach($cartItems as $item)
         <div class="cart-item">
           <div class="cart-item-emoji" style="background: {{ $item['product']->color }}">
-            {{ $item['product']->emoji }}
+            @if($item['product']->image)
+              <img src="{{ asset('storage/'.$item['product']->image) }}"
+                   alt="{{ $item['product']->name }}"
+                   onerror="this.style.display='none';this.parentElement.textContent='{{ $item['product']->emoji }}';" />
+            @else
+              {{ $item['product']->emoji }}
+            @endif
           </div>
           <div class="cart-item-info">
             <div class="cart-item-name">{{ $item['product']->name }}</div>
@@ -101,12 +109,21 @@
           <span>${{ number_format($total, 2) }}</span>
         </div>
 
-        <form action="{{ route('cart.checkout') }}" method="POST">
-          @csrf
-          <button type="submit" class="checkout-btn">
-            ✨ Checkout — ${{ number_format($total, 2) }}
-          </button>
-        </form>
+        {{-- Checkout button — goes to checkout page, login check handled server-side --}}
+        <a href="{{ route('checkout.page') }}" class="checkout-btn">
+          ✨ Proceed to Checkout — ${{ number_format($total, 2) }}
+        </a>
+
+        @guest
+          <div class="login-notice">
+            <span style="font-size:1.4rem;">🔒</span>
+            <div>
+              <strong>Login required to checkout.</strong>
+              You'll be asked to login when you proceed.
+              <button onclick="openLoginModal()" style="color:var(--coral);background:none;border:none;cursor:pointer;font-weight:800;font-size:0.9rem;padding:0;margin-left:4px;">Login now →</button>
+            </div>
+          </div>
+        @endguest
       </div>
 
     @endif

@@ -14,11 +14,14 @@ Route::get('/shop',         [ProductController::class, 'shop'])->name('shop');
 Route::get('/about',        [ProductController::class, 'about'])->name('about');
 Route::get('/product/{id}', [ProductController::class, 'detail'])->name('product.detail');
 
-// Cart
+// Cart (public — guests can add to cart)
 Route::get('/cart',                [OrderController::class, 'cart'])->name('cart');
 Route::post('/cart/add/{id}',      [OrderController::class, 'addToCart'])->name('cart.add');
 Route::delete('/cart/remove/{id}', [OrderController::class, 'removeFromCart'])->name('cart.remove');
-Route::post('/cart/checkout',      [OrderController::class, 'checkout'])->name('cart.checkout');
+
+// Checkout — requires login
+Route::get('/checkout',  [OrderController::class, 'checkoutPage'])->name('checkout.page');
+Route::post('/checkout', [OrderController::class, 'checkout'])->name('cart.checkout')->middleware('auth');
 
 // ══ AUTH (guests only) ══
 Route::middleware('guest')->group(function () {

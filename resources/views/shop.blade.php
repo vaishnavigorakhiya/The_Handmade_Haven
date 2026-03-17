@@ -18,17 +18,13 @@
     <h2>All Embroidery Pieces</h2>
   </div>
 
-  {{-- Category Filters --}}
   <div class="filter-bar">
-    <a href="{{ route('shop') }}"
-       class="filter-btn {{ !$category ? 'active' : '' }}">All</a>
+    <a href="{{ route('shop') }}" class="filter-btn {{ !$category ? 'active' : '' }}">All</a>
     @foreach($categories as $cat)
-      <a href="{{ route('shop', ['category' => $cat]) }}"
-         class="filter-btn {{ $category === $cat ? 'active' : '' }}">{{ $cat }}</a>
+      <a href="{{ route('shop', ['category' => $cat]) }}" class="filter-btn {{ $category === $cat ? 'active' : '' }}">{{ $cat }}</a>
     @endforeach
   </div>
 
-  {{-- Products Grid --}}
   <div class="products-grid">
     @forelse($products as $product)
       @include('components.product-card', ['product' => $product])

@@ -11,12 +11,16 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')
-                             ->with('error', '🔒 Please login to continue.');
+            // Not logged in at all — send to home with modal
+            return redirect()->route('home')
+                ->with('open_login_modal', true)
+                ->with('error', '🔒 Please login to continue.');
         }
 
         if (!Auth::user()->isAdmin()) {
-            abort(403, 'Access denied. Admin only.');
+            // Logged in but not admin — send to their dashboard
+            return redirect()->route('user.dashboard')
+                ->with('error', '🚫 Access denied. Admin only.');
         }
 
         return $next($request);

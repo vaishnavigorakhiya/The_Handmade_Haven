@@ -2,123 +2,74 @@
 
 > A full-stack handmade embroidery e-commerce shop built with Laravel 12
 
-![Laravel](https://img.shields.io/badge/Laravel-12-FF6B6B?style=for-the-badge&logo=laravel&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-8.4-4ECDC4?style=for-the-badge&logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Twilio](https://img.shields.io/badge/Twilio-OTP%20SMS-F22F46?style=for-the-badge&logo=twilio&logoColor=white)
+---
+
+## 🔧 Bugs Fixed in This Version
+
+| # | Bug | Fix |
+|---|-----|-----|
+| 1 | `/login` redirect loop — modal never opened | `showLogin()` redirects to `/home` with `open_login_modal` flash; layout reads flash and calls `openLoginModal()` with correct timing |
+| 2 | Registered email showed "Create Account" form again | `submitIdentifier()` always returns `step: password` for existing emails — register form only for brand-new emails |
+| 3 | Checkout worked without login | `checkoutPage()` checks `Auth::check()`; saves `url.intended`; opens login modal |
+| 4 | No delivery address on checkout | New `checkout.blade.php` with full address form; address columns added to `orders` table |
+| 5 | Navbar broken/missing on About page for admin | `app.blade.php` navbar always renders for all authenticated roles |
+| 6 | `MassAssignmentException` on Order/OrderItem | Added `$fillable` to both models |
+| 7 | Sessions table missing (database session driver) | New migration `0001_01_01_000003_create_sessions_table.php` |
+| 8 | After login, no redirect to intended page | All auth handlers (`verifyPassword`, `verifyOtp`, `register`) pull `url.intended` from session |
 
 ---
 
-## 📖 About
-
-**Stitch & Bloom** is a handmade embroidery shop where customers can browse and buy hoops, pillowcases, sofa covers, and custom embroidery. Built as a beginner Laravel project — every feature was learned and built from scratch.
-
----
-
-## ✨ Features
-
-### 🛍️ Shop
-- Product listings with category filters
-- Product detail page with images, tags, stock status
-- Shopping cart with add/remove and quantity controls
-- Checkout with stock auto-decrement
-
-### 🔐 Authentication
-- **Phone OTP login** — customers get a real SMS via Twilio
-- **Email + Password login** — for admin accounts
-- Auto-register new customers on first OTP login
-- Single login modal accessible from navbar AND footer
-
-### 👤 User Dashboard
-- Order history and total spending
-- Welcome coupon (STITCH10 — 10% off first order)
-- Edit profile name
-
-### ⚙️ Admin Dashboard
-- Add products with image upload, emoji, color themes
-- One-click restock (+5 units)
-- Delete products
-- Live stats — total products, orders, revenue
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Laravel 12, PHP 8.4 |
-| Frontend | Blade Templates, Custom CSS |
-| Database | MySQL |
-| Auth | Laravel Auth + Twilio SMS OTP |
-| Storage | Laravel Storage (product images) |
-| Fonts | Playfair Display + Nunito |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- PHP 8.4+
-- Composer
-- MySQL
-- Twilio account (free trial works)
-
-### Installation
+## 🚀 Fresh Setup
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/the-handmade-haven.git
+# 1. Clone / extract project
 cd the-handmade-haven
 
-# 2. Install dependencies
+# 2. Install PHP dependencies
 composer install
 
 # 3. Setup environment
 cp .env.example .env
 php artisan key:generate
 
-# 4. Configure .env (database + Twilio credentials)
+# 4. Configure .env — set DB_DATABASE, DB_USERNAME, DB_PASSWORD
 
-# 5. Run migrations and seed
+# 5. Run all migrations
 php artisan migrate:fresh
+
+# 6. Seed admin + products
 php artisan db:seed --class=AdminSeeder
 php artisan db:seed --class=ProductSeeder
 
-# 6. Link storage for images
+# 7. Link storage
 php artisan storage:link
 
-# 7. Start server
+# 8. Install JS deps & build
+npm install && npm run build
+
+# 9. Serve
 php artisan serve
 ```
 
-Visit: `http://127.0.0.1:8000`
+Visit: **http://127.0.0.1:8000**
 
 ---
 
-## ⚙️ Environment Variables
+## ⚙️ Important .env Note
 
+For **local development**, use `SESSION_DRIVER=file` to skip needing the sessions table:
 ```env
-DB_DATABASE=stitch_bloom
-DB_USERNAME=root
-DB_PASSWORD=
-
 SESSION_DRIVER=file
-
-TWILIO_SID=ACxxxxxxxxxxxxxxxxx
-TWILIO_TOKEN=your_auth_token
-TWILIO_FROM=+1234567890
-
-APP_ENV=local   # Shows OTP on screen for local testing
 ```
 
-> 💡 When `APP_ENV=local`, the OTP is shown on screen — no Twilio needed for testing!
+For **production**, use `SESSION_DRIVER=database` (sessions table migration is included).
 
 ---
 
 ## 🔑 Default Admin Login
 
 | Field | Value |
-|---|---|
+|-------|-------|
 | Email | `admin@stitchandbloom.com` |
 | Password | `Admin@1234` |
 
@@ -126,41 +77,28 @@ APP_ENV=local   # Shows OTP on screen for local testing
 
 ---
 
-## 📁 Project Structure
+## 🔐 How Login Works
 
-```
-app/
-  Http/Controllers/   → Auth, Product, Order, UserDashboard
-  Http/Middleware/    → AdminMiddleware
-  Models/             → User, Product, Order, OrderItem
-  Services/           → TwilioService
-database/
-  migrations/         → All table schemas
-  seeders/            → AdminSeeder, ProductSeeder
-resources/views/
-  layouts/            → app.blade.php (main layout)
-  components/         → login-modal, product-card
-  user/               → dashboard
-  admin.blade.php
-routes/
-  web.php             → All routes
-```
+1. Click **Login / Join** → modal opens
+2. **Enter email** → if registered → password step | if new → register step
+3. **Enter phone** → OTP sent (shows on screen when `APP_ENV=local`)
+4. After login → redirects to intended page (e.g. checkout) or dashboard
 
 ---
 
-## 📚 What I Learned
+## 📁 Key Changed Files
 
-- Laravel MVC architecture
-- Database design and Eloquent ORM
-- Role-based authentication with middleware
-- Real SMS OTP with Twilio API
-- File uploads and Laravel storage
-- Blade templating — layouts, components, slots
-- AJAX calls from Blade to Laravel backend
-- Session management and CSRF protection
-
----
-
-## 🌸 Made with love
-
-> Handmade embroidery deserves a handmade website. Built stitch by stitch. 🧵
+```
+app/Http/Controllers/AuthController.php   ← login flow fixes
+app/Http/Controllers/OrderController.php  ← checkout auth + address
+app/Http/Middleware/AdminMiddleware.php    ← no redirect loop
+app/Models/Order.php                      ← $fillable added
+app/Models/OrderItem.php                  ← $fillable added
+bootstrap/app.php                         ← redirectGuestsTo registered
+database/migrations/*_create_sessions_table.php  ← new
+database/migrations/*_create_orders_table.php    ← address fields included
+resources/views/layouts/app.blade.php     ← navbar + modal timing fix
+resources/views/checkout.blade.php        ← NEW address form
+resources/views/cart.blade.php            ← points to checkout page
+resources/views/auth/login.blade.php      ← cleaner step flow
+```

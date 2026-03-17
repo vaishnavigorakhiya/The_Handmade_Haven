@@ -18,9 +18,6 @@ class Product extends Model
         'stock'    => 'integer',
     ];
 
-    /**
-     * Return a safe image URL — storage path if image exists, null otherwise.
-     */
     public function getImageUrlAttribute(): ?string
     {
         if ($this->image && file_exists(storage_path('app/public/' . $this->image))) {
@@ -29,9 +26,6 @@ class Product extends Model
         return null;
     }
 
-    /**
-     * Decoded tags array.
-     */
     public function getTagsArrayAttribute(): array
     {
         if (!$this->tags) return [];

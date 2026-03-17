@@ -49,6 +49,8 @@
   .nav-btn.cart-btn:hover { background: #e55a5a; border-color: #e55a5a; }
   .nav-btn.login-btn { background: var(--teal); border-color: var(--teal); color: white; }
   .nav-btn.login-btn:hover { background: #3ab8b0; }
+  .nav-btn.admin-btn { background: var(--lavender); border-color: var(--dark); color: var(--dark); }
+  .nav-btn.admin-btn:hover { background: var(--dark); color: white; }
   .cart-badge {
     background: var(--dark); color: white; border-radius: 50%;
     width: 20px; height: 20px; font-size: 0.7rem;
@@ -108,7 +110,8 @@
     font-weight: 700; box-shadow: 4px 4px 0 var(--dark);
   }
   .alert-success { background: var(--green); }
-  .alert-error { background: var(--rose); }
+  .alert-error   { background: var(--rose); }
+  .alert-warning { background: var(--gold); }
   @media (max-width: 768px) { .alert { margin: 12px 16px; } }
 
   /* ══ BUTTONS ══ */
@@ -203,18 +206,14 @@
   .back-btn:hover { background: var(--dark); color: white; }
 
   /* ══ MOBILE GENERAL ══ */
-  @media (max-width: 900px) {
-    .section { padding: 60px 20px; }
-  }
-  @media (max-width: 600px) {
-    .btn-primary, .btn-secondary { padding: 14px 24px; font-size: 0.92rem; }
-  }
+  @media (max-width: 900px) { .section { padding: 60px 20px; } }
+  @media (max-width: 600px) { .btn-primary, .btn-secondary { padding: 14px 24px; font-size: 0.92rem; } }
 </style>
 @stack('styles')
 </head>
 <body>
 
-{{-- ══ NAVBAR ══ --}}
+{{-- ══ NAVBAR — works for ALL users including admin on About page ══ --}}
 <nav>
   <a class="nav-logo" href="{{ route('home') }}">🧵 Stitch <span>&</span> Bloom</a>
 
@@ -222,20 +221,19 @@
   <div class="nav-links">
     <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
     <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
+    <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
     <a class="nav-btn cart-btn" href="{{ route('cart') }}">
       🛒 Cart
-      @php
-        $cartCount = collect(session('cart', []))->sum();
-      @endphp
+      @php $cartCount = collect(session('cart', []))->sum(); @endphp
       @if($cartCount > 0)
         <span class="cart-badge">{{ $cartCount }}</span>
       @endif
     </a>
     @auth
       @if(Auth::user()->isAdmin())
-        <a class="nav-btn" href="{{ route('admin.dashboard') }}">⚙ Admin</a>
+        <a class="nav-btn admin-btn {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">⚙ Admin</a>
       @else
-        <a class="nav-btn" href="{{ route('user.dashboard') }}">👤 My Account</a>
+        <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">👤 My Account</a>
       @endif
       <form method="POST" action="{{ route('logout') }}" style="display:inline">
         @csrf
@@ -256,16 +254,15 @@
 <div class="nav-drawer" id="navDrawer">
   <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
   <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🧵 Shop</a>
+  <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
   <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
     🛒 Cart
     @php $cartCount = collect(session('cart', []))->sum(); @endphp
-    @if($cartCount > 0)
-      <span class="cart-badge">{{ $cartCount }}</span>
-    @endif
+    @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
   </a>
   @auth
     @if(Auth::user()->isAdmin())
-      <a class="nav-btn" href="{{ route('admin.dashboard') }}" onclick="closeMobileNav()">⚙ Admin Dashboard</a>
+      <a class="nav-btn admin-btn" href="{{ route('admin.dashboard') }}" onclick="closeMobileNav()">⚙ Admin Dashboard</a>
     @else
       <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a>
     @endif
@@ -285,6 +282,9 @@
 @if(session('error'))
   <div class="alert alert-error">❌ {{ session('error') }}</div>
 @endif
+@if(session('warning'))
+  <div class="alert alert-warning">⚠️ {{ session('warning') }}</div>
+@endif
 
 @yield('content')
 
@@ -299,12 +299,26 @@
   @endguest
 </footer>
 
-{{-- ══ LOGIN MODAL ══ --}}
+{{-- ══ LOGIN MODAL — only shown to guests (included BEFORE any trigger scripts) ══ --}}
 @guest
   @include('auth.login')
 @endguest
 
 <script>
+/* ── Auto-open login modal if session flash is set ──
+   The modal HTML + its JS are already in the DOM at this point,
+   so openLoginModal() is guaranteed to exist when this runs.      ── */
+@if(session('open_login_modal'))
+  document.addEventListener('DOMContentLoaded', function() {
+    // Small delay so all inline scripts finish defining their functions
+    setTimeout(function() {
+      if (typeof openLoginModal === 'function') {
+        openLoginModal();
+      }
+    }, 100);
+  });
+@endif
+
 /* Mobile nav toggle */
 function toggleMobileNav() {
   const drawer = document.getElementById('navDrawer');
@@ -326,11 +340,10 @@ function closeMobileNav() {
 
 /* Close drawer when clicking outside */
 document.addEventListener('click', function (e) {
-  const drawer  = document.getElementById('navDrawer');
-  const burger  = document.getElementById('navHamburger');
-  const modal   = document.getElementById('loginModalOverlay');
+  const drawer = document.getElementById('navDrawer');
+  const burger = document.getElementById('navHamburger');
   if (!drawer || !burger) return;
-  if (!drawer.contains(e.target) && !burger.contains(e.target) && (!modal || !modal.contains(e.target))) {
+  if (!drawer.contains(e.target) && !burger.contains(e.target)) {
     closeMobileNav();
   }
 });

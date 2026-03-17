@@ -19,18 +19,12 @@ class AuthController extends Controller
         $this->twilio = $twilio;
     }
 
-    // ── Show Login Page (fallback if JS disabled) ──
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        if (Auth::check()) {
-            return Auth::user()->isAdmin()
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('user.dashboard');
-        }
+        
         return redirect()->route('home')->with('open_login_modal', true);
     }
 
-    // ── STEP 1: Submit email or phone — returns JSON ──
     public function submitIdentifier(Request $request)
     {
         $request->validate(['identifier' => 'required|string']);
@@ -43,22 +37,20 @@ class AuthController extends Controller
             return response()->json(['error' => 'Please enter a valid email address or 10-digit phone number.']);
         }
 
-        // ── EMAIL path ──
+        
         if ($isEmail) {
             $user = User::where('email', $identifier)->first();
 
             if (!$user) {
-                // New email — prompt registration
+                
                 session(['auth_register_email' => $identifier]);
                 return response()->json(['step' => 'register']);
             }
 
-            // Existing email user — go to password
             session(['auth_identifier' => $identifier]);
             return response()->json(['step' => 'password']);
         }
 
-        // ── PHONE: Customer OTP login / auto-register ──
         $phone = preg_replace('/\D/', '', $identifier);
 
         $user = User::firstOrCreate(
@@ -81,7 +73,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ── STEP 2a: Verify password — returns JSON ──
     public function verifyPassword(Request $request)
     {
         $request->validate(['password' => 'required|string']);
@@ -99,15 +90,16 @@ class AuthController extends Controller
 
         Auth::login($user, $request->boolean('remember'));
         session()->forget('auth_identifier');
+        session()->regenerate();
 
-        $redirect = $user->isAdmin()
+        $intended = session()->pull('url.intended');
+        $default  = $user->isAdmin()
             ? route('admin.dashboard')
             : route('user.dashboard');
 
-        return response()->json(['redirect' => $redirect]);
+        return response()->json(['redirect' => $intended ?: $default]);
     }
 
-    // ── STEP 2b: Verify OTP — returns JSON ──
     public function verifyOtp(Request $request)
     {
         $request->validate(['otp' => 'required|string']);
@@ -127,11 +119,12 @@ class AuthController extends Controller
         $user->update(['is_verified' => true]);
         Auth::login($user, true);
         session()->forget('auth_phone');
+        session()->regenerate();
 
-        return response()->json(['redirect' => route('user.dashboard')]);
+        $intended = session()->pull('url.intended');
+        return response()->json(['redirect' => $intended ?: route('user.dashboard')]);
     }
 
-    // ── STEP 2c: Register new email user — returns JSON ──
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -158,12 +151,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Double-check the email from session matches what was submitted
-        $sessionEmail = session('auth_register_email');
-        if ($sessionEmail && strtolower($sessionEmail) !== strtolower($request->email)) {
-            // Allow — the email in the form is canonical
-        }
-
         $user = User::create([
             'name'        => $request->name,
             'email'       => strtolower(trim($request->email)),
@@ -174,11 +161,12 @@ class AuthController extends Controller
 
         session()->forget('auth_register_email');
         Auth::login($user, true);
+        session()->regenerate();
 
-        return response()->json(['redirect' => route('user.dashboard')]);
+        $intended = session()->pull('url.intended');
+        return response()->json(['redirect' => $intended ?: route('user.dashboard')]);
     }
 
-    // ── Resend OTP — returns JSON ──
     public function resendOtp(Request $request)
     {
         $phone = session('auth_phone');
@@ -195,7 +183,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ── Logout ──
     public function logout(Request $request)
     {
         Auth::logout();

@@ -54,21 +54,6 @@ class ProductController extends Controller
             'stock'       => 'required|integer|min:0',
             'description' => 'required|string|min:10',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ], [
-            'name.required'        => 'Product name is required.',
-            'name.min'             => 'Name must be at least 3 characters.',
-            'price.required'       => 'Price is required.',
-            'price.numeric'        => 'Enter a valid price.',
-            'price.min'            => 'Price cannot be negative.',
-            'category.required'    => 'Please select a category.',
-            'stock.required'       => 'Stock quantity is required.',
-            'stock.integer'        => 'Stock must be a whole number.',
-            'stock.min'            => 'Stock cannot be negative.',
-            'description.required' => 'Product description is required.',
-            'description.min'      => 'Description must be at least 10 characters.',
-            'image.image'          => 'The file must be an image.',
-            'image.mimes'          => 'Only JPG, PNG, and WEBP images are allowed.',
-            'image.max'            => 'Image file size must not exceed 2 MB.',
         ]);
 
         $imagePath = null;
@@ -105,21 +90,6 @@ class ProductController extends Controller
             'stock'       => 'required|integer|min:0',
             'description' => 'required|string|min:10',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ], [
-            'name.required'        => 'Product name is required.',
-            'name.min'             => 'Name must be at least 3 characters.',
-            'price.required'       => 'Price is required.',
-            'price.numeric'        => 'Enter a valid price.',
-            'price.min'            => 'Price cannot be negative.',
-            'category.required'    => 'Please select a category.',
-            'stock.required'       => 'Stock quantity is required.',
-            'stock.integer'        => 'Stock must be a whole number.',
-            'stock.min'            => 'Stock cannot be negative.',
-            'description.required' => 'Product description is required.',
-            'description.min'      => 'Description must be at least 10 characters.',
-            'image.image'          => 'The file must be an image.',
-            'image.mimes'          => 'Only JPG, PNG, and WEBP images are allowed.',
-            'image.max'            => 'Image file size must not exceed 2 MB.',
         ]);
 
         $imagePath = $product->image;

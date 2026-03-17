@@ -35,11 +35,6 @@
 
 @section('content')
 
-{{-- Auto-open login modal if redirected from /login --}}
-@if(session('open_login_modal'))
-<script>document.addEventListener('DOMContentLoaded', () => openLoginModal());</script>
-@endif
-
 {{-- HERO --}}
 <div class="hero">
   <div class="hero-bg"></div>
