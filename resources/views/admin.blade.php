@@ -148,13 +148,23 @@
               </td>
               <td>
                 <div class="action-btns">
-                  <button type="button" class="act-btn act-edit"
-                    onclick='openEdit({{ $product->id }},@json(["name"=>$product->name,"price"=>$product->price,"category"=>$product->category,"stock"=>$product->stock,"description"=>$product->description,"badge"=>$product->badge,"color"=>$product->color,"image"=>$product->image]))'>✏ Edit</button>
-                  <form action="{{ route('admin.products.restock',$product->id) }}" method="POST">
-                    @csrf<button type="submit" class="act-btn act-restock">📦 +5</button>
-                  </form>
-                  <button type="button" class="act-btn act-del"
-                    onclick="openDel({{ $product->id }},'{{ addslashes($product->name) }}')">🗑 Delete</button>
+                    <button type="button" class="act-btn act-edit"
+                        data-id="{{ $product->id }}"
+                        data-name="{{ $product->name }}"
+                        data-price="{{ $product->price }}"
+                        data-category="{{ $product->category }}"
+                        data-stock="{{ $product->stock }}"
+                        data-description="{{ addslashes($product->description) }}"
+                        data-badge="{{ $product->badge }}"
+                        data-color="{{ $product->color }}"
+                        data-image="{{ $product->image }}"
+                        onclick="openEditFromData(this)">✏ Edit</button>
+                    <form action="{{ route('admin.products.restock',$product->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="act-btn act-restock">📦 +5</button>
+                    </form>
+                    <button type="button" class="act-btn act-del"
+                        onclick="openDel({{ $product->id }},'{{ addslashes($product->name) }}')">🗑 Delete</button>
                 </div>
               </td>
             </tr>
@@ -383,5 +393,18 @@ function closeDel(){document.getElementById('delOverlay').classList.remove('open
 function confirmDel(){if(!_dId)return;const f=document.getElementById('delForm');f.action='/admin/products/'+_dId;f.submit();}
 document.getElementById('delOverlay').addEventListener('click',function(e){if(e.target===this)closeDel();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeEdit();closeDel();}});
+function openEditFromData(btn) {
+    const p = {
+        name:        btn.dataset.name,
+        price:       btn.dataset.price,
+        category:    btn.dataset.category,
+        stock:       btn.dataset.stock,
+        description: btn.dataset.description,
+        badge:       btn.dataset.badge,
+        color:       btn.dataset.color,
+        image:       btn.dataset.image
+    };
+    openEdit(btn.dataset.id, p);
+}
 </script>
 @endpush
