@@ -19,8 +19,10 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
-# Set permissions
-RUN chmod -R 777 storage bootstrap/cache
+# Ensure the public storage directory exists so storage:link never fails
+# even when storage/app/public/ is empty (gitignored uploads folder).
+RUN mkdir -p storage/app/public/products \
+    && chmod -R 777 storage bootstrap/cache
 
 # Expose port
 EXPOSE 8080
