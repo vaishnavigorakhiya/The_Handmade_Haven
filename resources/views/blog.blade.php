@@ -190,7 +190,8 @@
 
         @php
         $posts = [
-            ['flip'=>false, 'tag'=>'Traditional Craft',        'img'=>'kantha',       'fallback'=>'photo-1558618666-fcd25c85cd64',
+            ['flip'=>false, 'tag'=>'Traditional Craft',        
+             'local'=>'kantha.jpg',   
              'title'=>'Kantha — The Running Stitch of Bengal',
              'body'=>"Kantha is one of India's oldest forms of embroidery, born from the riverine heartland of Bengal. Women layered old saris and quilted them with a simple running stitch, turning worn fabric into luminous storytelling cloth. Motifs of fish, birds, the lotus, and the tree of life dance across the surface in threads the colour of turmeric and indigo.",
              'slug'=>'kantha-embroidery'],
