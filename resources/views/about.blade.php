@@ -317,7 +317,7 @@
     <div class="hero-center">
       <div class="portrait-wrap">
         <div class="portrait-ring">
-          <img src="{{ asset('storage/products/Profile.jpeg') }}"
+          <img src="{{ asset('images/Profile.jpeg') }}"
                alt="Vaishnavi Gorakhiya — Founder of Soochikaari"
                onerror="this.style.display='none';" />
         </div>
@@ -402,7 +402,7 @@
       <div class="story-img-frame">
         <div class="story-badge">Est. 2019 · Surat, Gujarat</div>
         <div class="story-img-main">
-          <img src="{{ asset('storage/products/AboutUs.jpeg') }}"
+          <img src="{{ asset('images/AboutUs.jpeg') }}"
                alt="Embroidery in progress" onerror="this.style.display='none';" />
         </div>
         <div class="story-img-deco">🌸</div>
