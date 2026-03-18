@@ -235,7 +235,7 @@
       <div class="footer-info-links">
         <a class="footer-info-link" href="{{ route('about') }}">About Us</a>
         <a class="footer-info-link" href="{{ route('shop') }}">Shop</a>
-        <a class="footer-info-link" href="{{ route('blog') }}">Blog</a>
+        <a class="footer-info-link" href="/blog">Blog</a>
         <a class="footer-info-link" href="#">Contact</a>
         <a class="footer-info-link" href="#">Help & Support</a>
         <a class="footer-info-link" href="{{ route('cart') }}">Track My Order</a>

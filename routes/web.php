@@ -43,7 +43,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Blog index page
-Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog', function () {
+    return view('blog'); 
+});;
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // ══ ADMIN ══
