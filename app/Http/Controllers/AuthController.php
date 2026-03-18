@@ -21,7 +21,6 @@ class AuthController extends Controller
 
     public function showLogin(Request $request)
     {
-        
         return redirect()->route('home')->with('open_login_modal', true);
     }
 
@@ -37,12 +36,11 @@ class AuthController extends Controller
             return response()->json(['error' => 'Please enter a valid email address or 10-digit phone number.']);
         }
 
-        
+        // ── EMAIL path ──
         if ($isEmail) {
             $user = User::where('email', $identifier)->first();
 
             if (!$user) {
-                
                 session(['auth_register_email' => $identifier]);
                 return response()->json(['step' => 'register']);
             }
@@ -167,6 +165,7 @@ class AuthController extends Controller
         return response()->json(['redirect' => $intended ?: route('user.dashboard')]);
     }
 
+    // ── Resend OTP — returns JSON ──
     public function resendOtp(Request $request)
     {
         $phone = session('auth_phone');
@@ -183,6 +182,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // ── Logout ──
     public function logout(Request $request)
     {
         Auth::logout();

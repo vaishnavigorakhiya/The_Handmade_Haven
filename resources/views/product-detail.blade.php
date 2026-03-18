@@ -49,7 +49,7 @@
     <div class="detail-info">
       <div class="product-category">{{ $product->category }}</div>
       <h1>{{ $product->name }}</h1>
-      <div class="detail-price">${{ number_format($product->price, 2) }}</div>
+      <div class="detail-price">₹{{ number_format($product->price, 2) }}</div>
       <div class="detail-meta">
         <div class="detail-meta-chip">
           📦

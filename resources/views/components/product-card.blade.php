@@ -21,7 +21,7 @@
       <div class="product-name">{{ $product->name }}</div>
       <div class="product-desc">{{ Str::limit($product->description, 80) }}</div>
       <div class="product-footer">
-        <div class="product-price">${{ number_format($product->price, 2) }}</div>
+        <div class="product-price">₹{{ number_format($product->price, 2) }}</div>
         @if($product->stock > 0)
           <form action="{{ route('cart.add', $product->id) }}" method="POST">
             @csrf

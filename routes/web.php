@@ -7,6 +7,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BlogController;
 
 // ══ PUBLIC ══
 Route::get('/',             [ProductController::class, 'home'])->name('home');
@@ -40,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard',          [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
 });
+
+// Blog index page
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // ══ ADMIN ══
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
