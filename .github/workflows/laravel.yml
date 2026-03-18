@@ -6,25 +6,40 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# ✅ FIX: Opt into Node.js 24 now to silence the deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ FIX: Updated to actions/checkout@v4.2.2 which supports Node 24
       - uses: actions/checkout@v4.2.2
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo, pdo_mysql
+          extensions: mbstring, bcmath, pdo, pdo_sqlite, sqlite3
           coverage: none
 
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Copy .env for CI
+        run: |
+          cp .env.example .env
+          # Override only what CI needs — keeps all your other .env.example values
+          echo "APP_ENV=testing"           >> .env
+          echo "APP_KEY="                  >> .env
+          echo "DB_CONNECTION=sqlite"      >> .env
+          echo "DB_DATABASE=:memory:"      >> .env
+          echo "SESSION_DRIVER=array"      >> .env
+          echo "CACHE_DRIVER=array"        >> .env
+          echo "QUEUE_CONNECTION=sync"     >> .env
+          echo "MAIL_MAILER=array"         >> .env
 
       - name: Install Composer Dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
+        run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
 
       - name: Generate App Key
         run: php artisan key:generate
@@ -35,13 +50,12 @@ jobs:
       - name: Install Node Dependencies
         run: npm ci
 
-      # ✅ FIX: was `npm run dev` which starts a live HMR server and blocks forever.
-      # Use `npm run build` to compile assets and exit cleanly.
+      # ✅ FIX: npm run build (not dev) — dev starts a live server that never exits
       - name: Build Frontend Assets
         run: npm run build
 
+      - name: Run Migrations (in-memory SQLite)
+        run: php artisan migrate --force
+
       - name: Run Tests
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
-        run: php artisan test
+        run: php artisan test --stop-on-failure
