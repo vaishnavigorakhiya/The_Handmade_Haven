@@ -201,7 +201,8 @@
              'body'=>'Known as Shisha, mirror-work embroidery was born in the arid brilliance of Kutch and Saurashtra. Tiny convex mirrors are anchored to cloth with intricate stitches — chain, buttonhole, and herringbone — so that every movement sends light scattering like stars. Originally protective talismans, they are now the jewels of Gujarati folk dress.',
              'slug'=>'mirror-work-embroidery'],
 
-            ['flip'=>false, 'tag'=>'Nomadic Traditions',        'img'=>'rabari',       'fallback'=>'photo-1624005340922-6b837c3a4ba8',
+            ['flip'=>false, 'tag'=>'Nomadic Traditions',        
+             'img'=>'Rabari',       'fallback'=>'photo-1607082348824-0a96f2a4b9da',
              'title'=>'Rabari — Embroidery of the Desert Nomads',
              'body'=>'The Rabari pastoralists of Rajasthan and Gujarat have carried their needles across the Thar Desert for centuries. Dense chain stitches, mirrors, and colourful wool tassels narrate a nomadic cosmology — camels, peacocks, and geometric patterns that encode clan identity across generations.',
              'slug'=>'rabari-embroidery'],
@@ -211,7 +212,7 @@
              'body'=>'From the Kathiawar peninsula of Gujarat, this style bursts with crimson, emerald, and royal blue in chain and satin stitches on coarse hand-woven cloth. Floral medallions, elephant processions, and geometric borders celebrate every rite of passage — weddings, harvests, and births.',
              'slug'=>'kathiyawadi-embroidery'],
 
-            ['flip'=>false, 'tag'=>'Karnataka Legacy',          'img'=>'kasuti',       'fallback'=>'photo-1558769132-cb1aea458c5e',
+            ['flip'=>false, 'tag'=>'Karnataka Legacy',          'img'=>'Kasuti',       'fallback'=>'photo-1558769132-cb1aea458c5e',
              'title'=>'Kasuti — The Reversible Art of Karnataka',
              'body'=>'Kasuti is the traditional folk embroidery of northern Karnataka, worked in four distinct stitches so precisely that the design looks identical on both sides. Temple towers, palanquins, and lotus blooms are rendered in silk on Ilkal sarees — a GI-tagged craft practised since the Chalukya era.',
              'slug'=>'kasuti-embroidery'],
@@ -226,7 +227,7 @@
              'body'=>'The Chamba Rumal of Himachal Pradesh translates the elegance of Pahari miniature painting into untwisted silk on fine muslin. Scenes from the Ramayana and Mahabharata are rendered in double satin stitch with no knots on either side — historically prized as royal gifts and temple offerings.',
              'slug'=>'chamba-rumal-embroidery'],
 
-            ['flip'=>true,  'tag'=>"Kashmir's Crown Jewel",     'img'=>'kashida',      'fallback'=>'photo-1606760227091-3dd870d97f1d',
+            ['flip'=>true,  'tag'=>"Kashmir's Crown Jewel",     'img'=>'Kashida',      'fallback'=>'photo-1606760227091-3dd870d97f1d',
              'title'=>'Kashida — The Soul of Kashmir in Every Stitch',
              'body'=>'Kashida is the centuries-old embroidery of the Kashmir Valley, worked on the finest woollen and silk grounds. The sozni needlework produces delicate floral vines — chinar leaves, irises, paisleys — while the bold aari hook fills large shawls with lush motifs that can take months or years to complete.',
              'slug'=>'kashida-embroidery'],
