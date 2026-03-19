@@ -112,7 +112,7 @@
   <div class="admin-stats">
     <div class="stat-card"><div class="stat-emoji">🧵</div><div class="stat-value">{{ $products->count() }}</div><div class="stat-label">Products</div></div>
     <div class="stat-card"><div class="stat-emoji">📦</div><div class="stat-value">{{ $totalOrders }}</div><div class="stat-label">Orders</div></div>
-    <div class="stat-card"><div class="stat-emoji">💰</div><div class="stat-value">${{ number_format($totalRevenue,0) }}</div><div class="stat-label">Revenue</div></div>
+    <div class="stat-card"><div class="stat-emoji">💰</div><div class="stat-value">₹{{ number_format($totalRevenue,0) }}</div><div class="stat-label">Revenue</div></div>
     <div class="stat-card"><div class="stat-emoji">⚠️</div><div class="stat-value">{{ $lowStock }}</div><div class="stat-label">Low Stock</div></div>
   </div>
 
@@ -139,7 +139,7 @@
               </td>
               <td><strong>{{ $product->name }}</strong></td>
               <td>{{ $product->category }}</td>
-              <td><strong>${{ number_format($product->price,2) }}</strong></td>
+              <td><strong>₹{{ number_format($product->price,2) }}</strong></td>
               <td>{{ $product->stock }}</td>
               <td>
                 @if($product->stock===0)<span class="stock-badge stock-out">Out of Stock</span>
@@ -223,7 +223,7 @@
           <div class="ferr" id="ae_name">@error('name'){{ $message }}@enderror</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Price ($) *</label>
+          <label class="form-label">Price (₹) *</label>
           <input class="form-input" name="price" id="a_price" type="number" step="0.01" min="0" value="{{ old('price') }}" placeholder="24.99" />
           <div class="ferr" id="ae_price">@error('price'){{ $message }}@enderror</div>
         </div>
@@ -296,7 +296,7 @@
         <div class="form-grid">
           <div class="form-divider"><span>Basic Info</span></div>
           <div class="form-group"><label class="form-label">Name *</label><input class="form-input" name="name" id="e_name" /><div class="ferr" id="ee_name"></div></div>
-          <div class="form-group"><label class="form-label">Price ($) *</label><input class="form-input" name="price" id="e_price" type="number" step="0.01" min="0" /><div class="ferr" id="ee_price"></div></div>
+          <div class="form-group"><label class="form-label">Price (₹) *</label><input class="form-input" name="price" id="e_price" type="number" step="0.01" min="0" /><div class="ferr" id="ee_price"></div></div>
           <div class="form-group"><label class="form-label">Category *</label>
             <select class="form-select" name="category" id="e_category">
               @foreach($categories as $cat)<option value="{{ $cat->name }}">{{ $cat->name }}</option>@endforeach

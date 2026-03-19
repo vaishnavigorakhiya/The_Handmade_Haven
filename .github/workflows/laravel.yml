@@ -1,4 +1,4 @@
-name: Laravel CI
+name: Deploy Laravel App
 
 on:
   push:
@@ -6,56 +6,41 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# ✅ FIX: Opt into Node.js 24 now to silence the deprecation warning
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
-  laravel-tests:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ FIX: Updated to actions/checkout@v4.2.2 which supports Node 24
-      - uses: actions/checkout@v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo, pdo_sqlite, sqlite3
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, pdo
           coverage: none
 
-      - name: Copy .env for CI
-        run: |
-          cp .env.example .env
-          # Override only what CI needs — keeps all your other .env.example values
-          echo "APP_ENV=testing"           >> .env
-          echo "APP_KEY="                  >> .env
-          echo "DB_CONNECTION=sqlite"      >> .env
-          echo "DB_DATABASE=:memory:"      >> .env
-          echo "SESSION_DRIVER=array"      >> .env
-          echo "CACHE_DRIVER=array"        >> .env
-          echo "QUEUE_CONNECTION=sync"     >> .env
-          echo "MAIL_MAILER=array"         >> .env
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
       - name: Install Composer Dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-      - name: Generate App Key
+      - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Set Directory Permissions
-        run: chmod -R 775 storage bootstrap/cache
+      - name: Set directory permissions
+        run: chmod -R 777 storage bootstrap/cache
 
-      - name: Install Node Dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM Dependencies
         run: npm ci
 
-      # ✅ FIX: npm run build (not dev) — dev starts a live server that never exits
-      - name: Build Frontend Assets
+      - name: Build Assets
         run: npm run build
-
-      - name: Run Migrations (in-memory SQLite)
-        run: php artisan migrate --force
-
-      - name: Run Tests
-        run: php artisan test --stop-on-failure

@@ -8,6 +8,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+
 
 // ══ PUBLIC ══
 Route::get('/',             [ProductController::class, 'home'])->name('home');
@@ -48,6 +52,10 @@ Route::get('/blog', function () {
 });;
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
+// USER-FACING CONTACT ROUTE 
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
 // ══ ADMIN ══
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/',                       [ProductController::class,  'adminDashboard'])->name('dashboard');
@@ -57,4 +65,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/products/{id}/restock', [ProductController::class,  'restock'])->name('products.restock');
     Route::post('/categories',            [CategoryController::class, 'store'])->name('categories.store');
     Route::delete('/categories/{id}',     [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+    Route::patch('/users/{user}/toggle', [AdminUserController::class, 'toggleStatus'])->name('users.toggle');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
+    Route::get('/contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
+    Route::patch('/contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.status');
+    Route::delete('/contacts/{contact}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
+
 });
+
+

@@ -176,6 +176,22 @@
     @else
       <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a>
     @endif
+    <a href="{{ route('admin.users.index') }}"
+      class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+        {{ request()->routeIs('admin.users*') ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+      <span>👥</span> Users
+    </a>
+
+    {{-- Contacts link --}}
+    <a href="{{ route('admin.contacts.index') }}"
+      class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+              {{ request()->routeIs('admin.contacts*') ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+        <span>📬</span> Contacts
+        @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
+        @if($newContacts > 0)
+            <span class="ml-auto bg-rose-500 text-white text-xs rounded-full px-2 py-0.5">{{ $newContacts }}</span>
+        @endif
+    </a>
     <form method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit" class="nav-btn" style="width:100%;justify-content:center;">Sign Out</button>
@@ -236,7 +252,7 @@
         <a class="footer-info-link" href="{{ route('about') }}">About Us</a>
         <a class="footer-info-link" href="{{ route('shop') }}">Shop</a>
         <a class="footer-info-link" href="/blog">Blog</a>
-        <a class="footer-info-link" href="#">Contact</a>
+        <a class="footer-info-link" href="{{ route('contact.index') }}">Contact</a>
         <a class="footer-info-link" href="#">Help & Support</a>
         <a class="footer-info-link" href="{{ route('cart') }}">Track My Order</a>
       </div>
