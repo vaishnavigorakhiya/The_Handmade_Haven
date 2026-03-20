@@ -3,8 +3,22 @@ builder = "nixpacks"
 buildCommand = "composer install --no-dev --optimize-autoloader && npm ci && npm run build"
 
 [deploy]
-startCommand = "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force || true && php artisan db:seed --class=ProductSeeder --force || true && php artisan storage:link || true && php -S 0.0.0.0:$PORT -t public"
+startCommand = "php artisan migrate --force && php -S 0.0.0.0:$PORT -t public"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+```
+
+That's it. **Just two commands.** No caching, no seeding, no storage link — just migrate and start the server.
+
+The reasons:
+- `config:cache` ✅ works but causes `route:cache` to hang
+- Seeders can be run manually once via Railway CLI after it's live
+- `storage:link` can be added back later
+- Caching can be done in the **build step** instead, not at runtime
+
+Once it's live and stable, you can run seeders manually from Railway's terminal:
+```
+railway run php artisan db:seed --class=AdminSeeder
+railway run php artisan db:seed --class=ProductSeeder
