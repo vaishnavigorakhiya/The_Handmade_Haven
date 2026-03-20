@@ -3,13 +3,8 @@ builder = "nixpacks"
 buildCommand = "composer install --no-dev --optimize-autoloader && npm ci && npm run build"
 
 [deploy]
-startCommand = "php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan storage:link && php-fpm"
+startCommand = "php artisan key:generate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force || true && php artisan db:seed --class=ProductSeeder --force || true && php artisan storage:link || true && php -S 0.0.0.0:${PORT:-8080} -t public"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-
-# NOTE: db:seed is intentionally NOT in startCommand.
-# This means seeder data will NOT be re-added on every push.
-# Run seeder only ONCE manually via Railway CLI:
-#   railway run php artisan db:seed --class=AdminSeeder
