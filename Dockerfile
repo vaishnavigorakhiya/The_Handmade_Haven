@@ -26,12 +26,13 @@ RUN chmod -R 777 storage bootstrap/cache
 EXPOSE 8080
 
 CMD sh -c "\
-    php artisan key:generate --force && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan migrate --force && \
-    php artisan db:seed --class=AdminSeeder --force && \
-    php artisan db:seed --class=ProductSeeder --force && \
-    php artisan storage:link && \
+    echo '==> Generating key...' && php artisan key:generate --force && \
+    echo '==> Caching config...' && php artisan config:cache && \
+    echo '==> Caching routes...' && php artisan route:cache && \
+    echo '==> Caching views...' && php artisan view:cache && \
+    echo '==> Running migrations...' && php artisan migrate --force && \
+    echo '==> Seeding admin...' && php artisan db:seed --class=AdminSeeder --force || true && \
+    echo '==> Seeding products...' && php artisan db:seed --class=ProductSeeder --force || true && \
+    echo '==> Linking storage...' && php artisan storage:link || true && \
+    echo '==> Starting server on port ${PORT:-8080}...' && \
     php -S 0.0.0.0:${PORT:-8080} -t public"
