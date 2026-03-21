@@ -145,6 +145,14 @@
     @auth
       @if(Auth::user()->isAdmin())
         <a class="nav-btn admin-btn {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">⚙ Admin</a>
+        <a class="nav-btn {{ request()->routeIs('admin.users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">👥 Users</a>
+        <a class="nav-btn {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
+          📬 Contacts
+          @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
+          @if($newContacts > 0)
+            <span class="cart-badge">{{ $newContacts }}</span>
+          @endif
+        </a>
       @else
         <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">👤 My Account</a>
       @endif
@@ -173,25 +181,17 @@
   @auth
     @if(Auth::user()->isAdmin())
       <a class="nav-btn admin-btn" href="{{ route('admin.dashboard') }}" onclick="closeMobileNav()">⚙ Admin Dashboard</a>
+      <a class="nav-btn" href="{{ route('admin.users.index') }}" onclick="closeMobileNav()">👥 Users</a>
+      <a class="nav-btn" href="{{ route('admin.contacts.index') }}" onclick="closeMobileNav()">
+        📬 Contacts
+        @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
+        @if($newContacts > 0)
+          <span class="cart-badge">{{ $newContacts }}</span>
+        @endif
+      </a>
     @else
       <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a>
     @endif
-    <a href="{{ route('admin.users.index') }}"
-      class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
-        {{ request()->routeIs('admin.users*') ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
-      <span>👥</span> Users
-    </a>
-
-    {{-- Contacts link --}}
-    <a href="{{ route('admin.contacts.index') }}"
-      class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
-              {{ request()->routeIs('admin.contacts*') ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
-        <span>📬</span> Contacts
-        @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
-        @if($newContacts > 0)
-            <span class="ml-auto bg-rose-500 text-white text-xs rounded-full px-2 py-0.5">{{ $newContacts }}</span>
-        @endif
-    </a>
     <form method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit" class="nav-btn" style="width:100%;justify-content:center;">Sign Out</button>

@@ -75,6 +75,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.status');
     Route::delete('/contacts/{contact}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
 
+    Route::get('/blog',                    [BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/create',             [BlogController::class, 'create'])->name('blog.create');
+    Route::post('/blog',                   [BlogController::class, 'store'])->name('blog.store');
+    Route::get('/blog/{blog}/edit',        [BlogController::class, 'edit'])->name('blog.edit');
+    Route::patch('/blog/{blog}',           [BlogController::class, 'update'])->name('blog.update');
+    Route::delete('/blog/{blog}',          [BlogController::class, 'destroy'])->name('blog.destroy');
+    Route::patch('/blog/{blog}/toggle',    [BlogController::class, 'togglePublish'])->name('blog.toggle');
+
+
 });
 
 

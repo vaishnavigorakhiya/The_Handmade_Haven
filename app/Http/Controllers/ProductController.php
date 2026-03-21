@@ -42,7 +42,8 @@ class ProductController extends Controller
         $totalOrders  = Order::count();
         $totalRevenue = Order::sum('total');
         $lowStock     = Product::where('stock', '>', 0)->where('stock', '<=', 3)->count();
-        return view('admin', compact('products', 'categories', 'totalOrders', 'totalRevenue', 'lowStock'));
+
+        return view('admin.admin', compact('products', 'categories', 'totalOrders', 'totalRevenue', 'lowStock'));
     }
 
     public function store(Request $request)

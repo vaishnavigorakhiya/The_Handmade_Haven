@@ -25,7 +25,9 @@ class ContactInquiryMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.contact-inquiry',
+            // Fixed: was 'emails.contact-inquiry' but the view file is at
+            // resources/views/contact-inquiry.blade.php
+            view: 'contact-inquiry',
         );
     }
 }
