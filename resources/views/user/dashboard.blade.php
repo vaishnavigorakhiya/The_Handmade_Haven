@@ -123,7 +123,13 @@
           <tbody>
             @foreach($orders as $order)
               <tr>
-                <td><strong>#{{ $order->id }}</strong></td>
+                {{-- <td><strong>#{{ $order->id }}</strong></td> --}}
+                <td>
+                  <a href="{{ route('user.order.detail', $order->id) }}"
+                    style="color: var(--p1); font-weight: 800; text-decoration: none;">
+                      #{{ $order->id }} →
+                  </a>
+                </td>
                 <td>{{ $order->created_at->format('d M Y') }}</td>
                 <td>
                   <div style="font-weight:700;">{{ $order->full_name ?? Auth::user()->name }}</div>

@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\OrderConfirmationMail;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -146,7 +148,8 @@ class OrderController extends Controller
             'user_id'      => Auth::id(),
             'total'        => $total,
             'shipping'     => $shipping,
-            'status'       => 'completed',
+            'status'           => 'placed',
+            'status_timeline'  => ['placed' => now()->toDateTimeString()],
             'full_name'    => $request->full_name,
             'phone'        => $request->phone,
             'address'      => $address,
@@ -170,6 +173,15 @@ class OrderController extends Controller
         }
 
         session()->forget('cart');
+        // Send confirmation email
+        try {
+            $userEmail = Auth::user()->email;
+            if ($userEmail) {
+                Mail::to($userEmail)->send(new OrderConfirmationMail($order->load('items.product')));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Order confirmation email failed: ' . $e->getMessage());
+        }
         return redirect()->route('home')->with('success', '🎉 Order placed! Thank you for your purchase!');
     }
 }

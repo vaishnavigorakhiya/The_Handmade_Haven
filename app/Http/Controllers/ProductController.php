@@ -24,6 +24,24 @@ class ProductController extends Controller
         return view('shop', compact('products', 'categories', 'category'));
     }
 
+    public function search(Request $request)
+    {
+        $query = trim($request->get('q', ''));
+
+        if (!$query) {
+            return redirect()->route('shop');
+        }
+
+        $products = Product::where('name', 'like', '%' . $query . '%')
+            ->orWhere('description', 'like', '%' . $query . '%')
+            ->orWhere('category', 'like', '%' . $query . '%')
+            ->get();
+
+        $categories = Category::orderBy('name')->pluck('name');
+
+        return view('search', compact('products', 'query', 'categories'));
+    }
+
     public function detail($id)
     {
         $product = Product::findOrFail($id);
@@ -132,4 +150,5 @@ class ProductController extends Controller
         return redirect()->route('admin.dashboard')
             ->with('success', '📦 "' . $product->name . '" restocked +5 units!');
     }
+
 }

@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'otp_expires_at'    => 'datetime',
         'is_verified'       => 'boolean',
+        'is_active'         => 'boolean', 
     ];
 
     public function isAdmin(): bool { return $this->role === 'admin'; }
@@ -54,5 +55,10 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(\App\Models\Wishlist::class);
     }
 }

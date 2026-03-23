@@ -11,13 +11,16 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\WishlistController;
 
 
 // ══ PUBLIC ══
 Route::get('/',             [ProductController::class, 'home'])->name('home');
 Route::get('/shop',         [ProductController::class, 'shop'])->name('shop');
+Route::get('/search',       [ProductController::class, 'search'])->name('search');
 Route::get('/about',        [ProductController::class, 'about'])->name('about');
 Route::get('/product/{id}', [ProductController::class, 'detail'])->name('product.detail');
+
 
 // Cart (public — guests can add to cart)
 Route::get('/cart',                [OrderController::class, 'cart'])->name('cart');
@@ -44,17 +47,24 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard',          [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
+    Route::get('/orders/{id}', [UserDashboardController::class, 'orderDetail'])->name('user.order.detail');
+    Route::get('/wishlist',                    [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/wishlist/toggle/{id}',       [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/remove/{id}',     [WishlistController::class, 'remove'])->name('wishlist.remove');
 });
 
 // Blog index page
 Route::get('/blog', function () {
     return view('blog'); 
-});;
+});
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // USER-FACING CONTACT ROUTE 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+
+Route::get('/orders/{id}', [UserDashboardController::class, 'orderDetail'])->name('user.order.detail');
 
 // ══ ADMIN ══
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

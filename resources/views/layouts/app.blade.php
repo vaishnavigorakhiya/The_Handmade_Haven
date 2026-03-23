@@ -136,6 +136,41 @@
   <div class="nav-links">
     <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
     <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
+    {{-- Search Form --}}
+    <form action="{{ route('search') }}" method="GET"
+          style="display:flex; align-items:center; gap:0; margin: 0 8px;">
+        <input
+            type="text"
+            name="q"
+            value="{{ request('q') }}"
+            placeholder="Search products…"
+            style="padding: 7px 14px;
+                  border: 1.5px solid var(--border);
+                  border-right: none;
+                  border-radius: 50px 0 0 50px;
+                  font-family: 'Nunito', sans-serif;
+                  font-size: 0.82rem;
+                  font-weight: 600;
+                  background: var(--bg);
+                  outline: none;
+                  width: 180px;
+                  color: var(--dark);"
+            onfocus="this.style.borderColor='var(--p1)'"
+            onblur="this.style.borderColor='var(--border)'"
+        />
+        <button type="submit"
+                style="padding: 7px 13px;
+                      background: var(--p1);
+                      color: white;
+                      border: 1.5px solid var(--p1);
+                      border-radius: 0 50px 50px 0;
+                      font-size: 0.85rem;
+                      cursor: pointer;
+                      font-family: 'Nunito', sans-serif;
+                      font-weight: 700;">
+            🔍
+        </button>
+    </form>
     <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
     <a class="nav-btn cart-btn" href="{{ route('cart') }}">
       🛒 Cart
@@ -170,6 +205,19 @@
 </nav>
 
 <div class="nav-drawer" id="navDrawer">
+  <form action="{{ route('search') }}" method="GET"
+      style="display:flex; gap:0; width:100%;">
+    <input type="text" name="q" value="{{ request('q') }}"
+           placeholder="Search products…"
+           style="flex:1; padding:11px 16px; border:1.5px solid var(--border);
+                  border-right:none; border-radius:50px 0 0 50px;
+                  font-family:'Nunito',sans-serif; font-size:0.95rem;
+                  font-weight:600; background:var(--bg); outline:none;" />
+    <button type="submit"
+            style="padding:11px 16px; background:var(--p1); color:white;
+                   border:1.5px solid var(--p1); border-radius:0 50px 50px 0;
+                   font-size:1rem; cursor:pointer;">🔍</button>
+  </form>
   <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
   <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🪡 Shop</a>
   <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
@@ -190,7 +238,21 @@
         @endif
       </a>
     @else
-      <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a>
+      {{-- <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a> --}}
+      {{-- Find this block for non-admin users and add the wishlist link: --}}
+      {{-- ADD this line: --}}
+      <a class="nav-btn {{ request()->routeIs('wishlist') ? 'active' : '' }}"
+        href="{{ route('wishlist') }}">
+          ❤️ Wishlist
+          @php
+              $wCount = Auth::user()->wishlists()->count();
+          @endphp
+          @if($wCount > 0)
+              <span class="cart-badge">{{ $wCount }}</span>
+          @endif
+      </a>
+      <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"
+        href="{{ route('user.dashboard') }}">👤 My Account</a>
     @endif
     <form method="POST" action="{{ route('logout') }}">
       @csrf

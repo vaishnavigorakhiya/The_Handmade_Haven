@@ -49,6 +49,14 @@ class BlogController extends Controller
             ->with('success', '📝 Blog post "' . $request->title . '" published!');
     }
 
+        public function show(string $slug)
+    {
+        $blog = Blog::where('slug', $slug)
+                    ->where('published', true)
+                    ->firstOrFail();
+        return view('blog.show', compact('blog'));
+    }
+
     public function edit(Blog $blog)
     {
         return view('admin.blog.edit', compact('blog'));

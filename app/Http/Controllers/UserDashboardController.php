@@ -10,10 +10,18 @@ class UserDashboardController extends Controller
 {
     public function index()
     {
-        $user   = Auth::user();
-        $orders = Order::where('user_id', $user->id)->latest()->get();
+        $user       = Auth::user();
+        $orders     = Order::where('user_id', $user->id)->latest()->get();
         $totalSpent = $orders->sum('total');
-        return view('user.dashboard', compact('user', 'orders', 'totalSpent'));
+        $wishlistCount = 0;
+        try {
+            $wishlistCount = $user->wishlists()->count();
+        } catch (\Exception $e) {
+        }
+
+        return view('user.dashboard', compact(
+            'user', 'orders', 'totalSpent', 'wishlistCount'
+        ));
     }
 
     public function updateProfile(Request $request)
@@ -22,4 +30,15 @@ class UserDashboardController extends Controller
         Auth::user()->update(['name' => $request->name]);
         return back()->with('success', '✅ Profile updated!');
     }
+
+    public function orderDetail($id)
+    {
+        $order = Order::with('items.product')
+                      ->where('id', $id)
+                      ->where('user_id', Auth::id())
+                      ->firstOrFail();
+
+        return view('user.order-detail', compact('order'));
+    }
+
 }
