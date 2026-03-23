@@ -172,6 +172,8 @@
         </button>
     </form>
     <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
+    <a class="nav-btn {{ request()->routeIs('blog.*') || request()->routeIs('blog.index') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
+    <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a>
     <a class="nav-btn cart-btn" href="{{ route('cart') }}">
       🛒 Cart
       @php $cartCount = collect(session('cart', []))->sum(); @endphp
@@ -221,6 +223,8 @@
   <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
   <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🪡 Shop</a>
   <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
+  <a class="nav-btn {{ request()->routeIs('blog.*') || request()->routeIs('blog.index') ? 'active' : '' }}" href="{{ route('blog.index') }}" onclick="closeMobileNav()">📝 Blog</a>
+  <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}" onclick="closeMobileNav()">📬 Contact</a>
   <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
     🛒 Cart
     @php $cartCount = collect(session('cart', []))->sum(); @endphp
@@ -238,9 +242,6 @@
         @endif
       </a>
     @else
-      {{-- <a class="nav-btn" href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a> --}}
-      {{-- Find this block for non-admin users and add the wishlist link: --}}
-      {{-- ADD this line: --}}
       <a class="nav-btn {{ request()->routeIs('wishlist') ? 'active' : '' }}"
         href="{{ route('wishlist') }}">
           ❤️ Wishlist
@@ -282,8 +283,8 @@
     <div>
       <div class="footer-col-title"><div class="footer-col-icon fci-about">🪡</div>About</div>
       <div class="footer-about-item"><span class="footer-about-icon">📍</span><span>Surat, Gujarat, India — where every thread finds its home</span></div>
-      <div class="footer-about-item"><span class="footer-about-icon">📞</span><a class="footer-about-link" href="#">+91 0000000000</a></div>
-      <div class="footer-about-item"><span class="footer-about-icon">✉️</span><a class="footer-about-link" href="#">Test@soochikaari.in</a></div>
+      <div class="footer-about-item"><span class="footer-about-icon">📞</span><span>Contact us through the form for order-specific help</span></div>
+      <div class="footer-about-item"><span class="footer-about-icon">✉️</span><a class="footer-about-link" href="mailto:{{ config('mail.from.address') }}">{{ config('mail.from.address') }}</a></div>
       <div class="footer-newsletter">
         <input type="email" placeholder="Enter email address" />
         <button>➤</button>
@@ -313,7 +314,7 @@
       <div class="footer-info-links">
         <a class="footer-info-link" href="{{ route('about') }}">About Us</a>
         <a class="footer-info-link" href="{{ route('shop') }}">Shop</a>
-        <a class="footer-info-link" href="/blog">Blog</a>
+        <a class="footer-info-link" href="{{ route('blog.index') }}">Blog</a>
         <a class="footer-info-link" href="{{ route('contact.index') }}">Contact</a>
         <a class="footer-info-link" href="#">Help & Support</a>
         <a class="footer-info-link" href="{{ route('cart') }}">Track My Order</a>
