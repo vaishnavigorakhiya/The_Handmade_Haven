@@ -14,22 +14,23 @@ class Product extends Model
 
     protected $casts = [
         'featured' => 'boolean',
-        'price'    => 'float',
-        'stock'    => 'integer',
+        'price' => 'float',
+        'stock' => 'integer',
+        'tags' => 'array',
     ];
 
     public function getImageUrlAttribute(): ?string
     {
-        if ($this->image && file_exists(storage_path('app/public/' . $this->image))) {
+        if ($this->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->image)) 
+        {            
             return asset('storage/' . $this->image);
         }
+
         return null;
     }
 
     public function getTagsArrayAttribute(): array
     {
-        if (!$this->tags) return [];
-        $decoded = json_decode($this->tags, true);
-        return is_array($decoded) ? $decoded : [];
+        return is_array($this->tags) ? $this->tags : [];
     }
 }

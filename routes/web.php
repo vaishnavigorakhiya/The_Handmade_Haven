@@ -60,9 +60,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Blog index page
-Route::get('/blog', function () {
-    return view('blog'); 
-});
+Route::get('/blog', [BlogController::class, 'publicIndex'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // USER-FACING CONTACT ROUTE 

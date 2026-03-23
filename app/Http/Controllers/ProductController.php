@@ -143,7 +143,7 @@ class ProductController extends Controller
             'color' => request('color') ?? $product?->color ?? '#FFE8D6',
             'description' => $validated['description'],
             'image' => $imagePath,
-            'tags' => json_encode([$validated['category']]),
+            'tags' => [$validated['category']],
             'badge' => request('badge') ?: null,
             'featured' => $product?->featured ?? false,
         ];
