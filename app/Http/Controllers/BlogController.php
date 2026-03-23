@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,25 +24,19 @@ class BlogController extends Controller
             ->latest()
             ->paginate(9);
 
-        return view('blog.index', [
-            'blogs' => $blogs,
-            'isAdminView' => false,
-        ]);
+        return view('blog-index', compact('blogs'));
     }
 
     public function index()
     {
         $blogs = Blog::latest()->paginate(15);
 
-        return view('blog.index', [
-            'blogs' => $blogs,
-            'isAdminView' => true,
-        ]);
+        return view('blog-index', compact('blogs'));
     }
 
     public function create()
     {
-        return view('blog.create');
+        return view('admin.blog.create');
     }
 
     public function store(Request $request)
@@ -53,7 +48,7 @@ class BlogController extends Controller
 
         Blog::create($validated);
 
-        return redirect()->route('blog.index')
+        return redirect()->route('blog-index')
             ->with('success', '📝 Blog post "' . $validated['title'] . '" published!');    }
 
     public function show(string $slug)
@@ -62,12 +57,12 @@ class BlogController extends Controller
             ->where('published', true)
             ->firstOrFail();
 
-        return view('blog.show', compact('blog'));
+        return view('admin.blog.show', compact('blog'));
     }
 
     public function edit(Blog $blog)
     {
-        return view('blog.create', compact('blog'));
+        return view('admin.blog.edit', compact('blog'));
     }
 
     public function update(Request $request, Blog $blog)
@@ -79,7 +74,7 @@ class BlogController extends Controller
 
         $blog->update($validated);
 
-        return redirect()->route('blog.index')
+        return redirect()->route('blog-index')
             ->with('success', '✅ Blog post "' . $blog->fresh()->title . '" updated!');    }
 
     public function destroy(Blog $blog)
@@ -90,7 +85,7 @@ class BlogController extends Controller
         $title = $blog->title;
         $blog->delete();
 
-        return redirect()->route('blog.index')
+        return redirect()->route('blog-index')
             ->with('success', '🗑 Post "' . $title . '" deleted.');
     }
 
