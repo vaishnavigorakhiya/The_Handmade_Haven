@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
                 'name'         => 'Admin',
                 'email'        => 'admin@stitchandbloom.com',
                 'phone'        => null,
-                'password'     => Hash::make('Admin@1234'), // change this!
+                'password'     => Hash::make('Admin@1234'),
                 'role'         => 'admin',
                 'is_verified'  => true,
             ]

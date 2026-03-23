@@ -26,8 +26,9 @@ class ContactController extends Controller
         $contact = Contact::create($validated);
 
         try {
-            Mail::to('vaishnavi.kansara00@gmail.com')->send(new ContactInquiryMail($contact));
-        } catch (\Exception $e) {
+                Mail::to(config('mail.from.address'))->send(new ContactInquiryMail($contact));        
+            } 
+            catch (\Exception $e) {
             // Log silently — don't block user confirmation
             \Log::error('Contact mail failed: ' . $e->getMessage());
         }

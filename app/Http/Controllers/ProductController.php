@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    private const PRODUCT_VALIDATION_RULES = [
+        'name' => 'required|string|min:3|max:255',
+        'price' => 'required|numeric|min:0',
+        'category' => 'required|string',
+        'stock' => 'required|integer|min:0',
+        'description' => 'required|string|min:10',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ];
+
     public function home()
     {
         $featured = Product::where('featured', true)->take(4)->get();
@@ -66,68 +75,22 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'        => 'required|string|min:3|max:255',
-            'price'       => 'required|numeric|min:0',
-            'category'    => 'required|string',
-            'stock'       => 'required|integer|min:0',
-            'description' => 'required|string|min:10',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+        $validated = $this->validateProduct($request);
+        $imagePath = $this->storeProductImage($request);
 
-        $imagePath = null;
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $imagePath = $request->file('image')->store('products', 'public');
-        }
-
-        Product::create([
-            'name'        => $request->name,
-            'price'       => $request->price,
-            'category'    => $request->category,
-            'stock'       => $request->stock,
-            'emoji'       => '🧵',
-            'color'       => $request->color ?? '#FFE8D6',
-            'description' => $request->description,
-            'image'       => $imagePath,
-            'tags'        => json_encode([$request->category]),
-            'badge'       => $request->badge ?: null,
-            'featured'    => false,
-        ]);
+        Product::create($this->buildProductAttributes($validated, $imagePath));
 
         return redirect()->route('admin.dashboard')
-            ->with('success', '✨ Product "' . $request->name . '" added successfully!');
-    }
+            ->with('success', '✨ Product "' . $validated['name'] . '" added successfully!');    
+        }
 
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        $validated = $this->validateProduct($request);
+        $imagePath = $this->storeProductImage($request, $product->image);
 
-        $request->validate([
-            'name'        => 'required|string|min:3|max:255',
-            'price'       => 'required|numeric|min:0',
-            'category'    => 'required|string',
-            'stock'       => 'required|integer|min:0',
-            'description' => 'required|string|min:10',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        $imagePath = $product->image;
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            if ($product->image) Storage::disk('public')->delete($product->image);
-            $imagePath = $request->file('image')->store('products', 'public');
-        }
-
-        $product->update([
-            'name'        => $request->name,
-            'price'       => $request->price,
-            'category'    => $request->category,
-            'stock'       => $request->stock,
-            'color'       => $request->color ?? $product->color,
-            'description' => $request->description,
-            'image'       => $imagePath,
-            'badge'       => $request->badge ?: null,
-            'tags'        => json_encode([$request->category]),
-        ]);
+        $product->update($this->buildProductAttributes($validated, $imagePath, $product));
 
         return redirect()->route('admin.dashboard')
             ->with('success', '✅ Product "' . $product->name . '" updated!');
@@ -149,6 +112,41 @@ class ProductController extends Controller
         $product->increment('stock', 5);
         return redirect()->route('admin.dashboard')
             ->with('success', '📦 "' . $product->name . '" restocked +5 units!');
+    }
+
+     private function validateProduct(Request $request): array
+    {
+        return $request->validate(self::PRODUCT_VALIDATION_RULES);
+    }
+
+    private function storeProductImage(Request $request, ?string $currentImage = null): ?string
+    {
+        if (!$request->hasFile('image') || !$request->file('image')->isValid()) {
+            return $currentImage;
+        }
+
+        if ($currentImage) {
+            Storage::disk('public')->delete($currentImage);
+        }
+
+        return $request->file('image')->store('products', 'public');
+    }
+
+    private function buildProductAttributes(array $validated, ?string $imagePath, ?Product $product = null): array
+    {
+        return [
+            'name' => $validated['name'],
+            'price' => $validated['price'],
+            'category' => $validated['category'],
+            'stock' => $validated['stock'],
+            'emoji' => $product?->emoji ?? '🧵',
+            'color' => request('color') ?? $product?->color ?? '#FFE8D6',
+            'description' => $validated['description'],
+            'image' => $imagePath,
+            'tags' => json_encode([$validated['category']]),
+            'badge' => request('badge') ?: null,
+            'featured' => $product?->featured ?? false,
+        ];
     }
 
 }

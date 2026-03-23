@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Order;
 
 class UserDashboardController extends Controller
 {
     public function index()
     {
-        $user       = Auth::user();
-        $orders     = Order::where('user_id', $user->id)->latest()->get();
+        $user = Auth::user();
+        $orders = Order::where('user_id', $user->id)->latest()->get();
         $totalSpent = $orders->sum('total');
-        $wishlistCount = 0;
-        try {
-            $wishlistCount = $user->wishlists()->count();
-        } catch (\Exception $e) {
-        }
+        $wishlistCount = $user->wishlists()->count();
 
         return view('user.dashboard', compact(
             'user', 'orders', 'totalSpent', 'wishlistCount'
@@ -27,16 +23,16 @@ class UserDashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate(['name' => 'required|string|max:100']);
-        Auth::user()->update(['name' => $request->name]);
+        Auth::user()->update([
+            'name' => trim($request->name),
+        ]);
         return back()->with('success', '✅ Profile updated!');
     }
 
-    public function orderDetail($id)
+    public function orderDetail(Order $order)
     {
-        $order = Order::with('items.product')
-                      ->where('id', $id)
-                      ->where('user_id', Auth::id())
-                      ->firstOrFail();
+        abort_unless($order->user_id === Auth::id(), 404);
+        $order->load('items.product');
 
         return view('user.order-detail', compact('order'));
     }

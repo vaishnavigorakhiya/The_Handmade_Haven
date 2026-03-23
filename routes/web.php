@@ -44,13 +44,19 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ══ USER DASHBOARD ══
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard',          [UserDashboardController::class, 'index'])->name('user.dashboard');
-    Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
-    Route::get('/orders/{id}', [UserDashboardController::class, 'orderDetail'])->name('user.order.detail');
-    Route::get('/wishlist',                    [WishlistController::class, 'index'])->name('wishlist');
-    Route::post('/wishlist/toggle/{id}',       [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    Route::delete('/wishlist/remove/{id}',     [WishlistController::class, 'remove'])->name('wishlist.remove');
+Route::middleware('auth')->group(function () {
+    Route::prefix('dashboard')->name('user.')->group(function () {
+        Route::get('/', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
+    });
+
+    Route::get('/orders/{order}', [UserDashboardController::class, 'orderDetail'])->name('user.order.detail');
+
+    Route::prefix('wishlist')->group(function () {
+        Route::get('/', [WishlistController::class, 'index'])->name('wishlist');
+        Route::post('/toggle/{id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+        Route::delete('/remove/{id}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    });
 });
 
 // Blog index page
@@ -62,9 +68,6 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 // USER-FACING CONTACT ROUTE 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
-
-
-Route::get('/orders/{id}', [UserDashboardController::class, 'orderDetail'])->name('user.order.detail');
 
 // ══ ADMIN ══
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
