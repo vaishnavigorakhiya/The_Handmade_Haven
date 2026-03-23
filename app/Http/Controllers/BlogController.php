@@ -23,7 +23,7 @@ class BlogController extends Controller
             ->latest()
             ->paginate(9);
 
-        return view('blog', compact('blogs'));
+        return view('blog.index', compact('blogs'));
     }
 
     public function index()
