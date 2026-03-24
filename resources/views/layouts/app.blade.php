@@ -185,7 +185,16 @@
         <a class="nav-btn {{ request()->routeIs('admin.users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">👥 Users</a>
         <a class="nav-btn {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
           📬 Contacts
-          @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
+          @php
+            try 
+            {
+              $newContacts = \App\Models\Contact::where('status', 'new')->count();
+            } 
+            catch (\Exception $e) 
+            {
+              $newContacts = 0;
+            }            
+          @endphp
           @if($newContacts > 0)
             <span class="cart-badge">{{ $newContacts }}</span>
           @endif
