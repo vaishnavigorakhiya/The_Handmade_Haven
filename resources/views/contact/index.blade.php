@@ -58,7 +58,7 @@
                     <div class="contact-highlight">
                         <div>📧</div>
                         <strong>Email support</strong>
-                        <span>{{ $contactEmail }}</span>
+                            <span>{{ $adminContactEmail }}</span>                    
                     </div>
                     <div class="contact-highlight">
                         <div>🕐</div>
@@ -87,8 +87,12 @@
                         <input id="contact-phone" type="text" name="phone" value="{{ old('phone') }}" placeholder="">
                         @error('phone')<div class="contact-error">{{ $message }}</div>@enderror
                     </div>
-
-                   <div style="margin-top:20px;">
+                    <div class="contact-field @error('message') is-error @enderror">
+                        <label for="contact-message">Your Query *</label>
+                        <textarea id="contact-message" name="message" placeholder="Tell us what you need help with, the product you are asking about, delivery location, quantity, or any custom request details.">{{ old('message') }}</textarea>
+                        @error('message')<div class="contact-error">{{ $message }}</div>@enderror
+                    </div>
+                    <div style="margin-top:20px;">
                         <button type="submit" class="btn-primary">Send Message ✉️</button>
                     </div>
                 </form>
@@ -118,8 +122,7 @@
                         <div>📨</div>
                         <div>
                             <strong>Preferred contact method</strong>
-                            <p>We’ll reach you at <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a> if you have questions about where inquiries go.</p>
-                        </div>
+                            <p>We’ll reach you at <a href="mailto:{{ $adminContactEmail }}">{{ $adminContactEmail }}</a>if you have questions about where inquiries go.</p>                        </div>
                     </div>
                 </div>
             </div>

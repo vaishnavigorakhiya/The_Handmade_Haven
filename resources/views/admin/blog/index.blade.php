@@ -235,10 +235,43 @@
                 <span class="post-tag">{{ $post['tag'] }}</span>
                 <h3>{{ $post['title'] }}</h3>
                 <p>{{ $post['body'] }}</p>
+                <a class="btn-read" href="{{ route('blog.show', $post['slug']) }}">Read More</a>
+            </div>
         </article>
         @endforeach
 
     </section>
+
+    @if(isset($blogs) && $blogs->count())
+    <section class="blog-posts" style="padding: 28px 0 0;">
+        <div style="padding: 0 20px 22px; max-width: 1080px; margin: 0 auto;">
+            <span class="blog-header-eyebrow" style="margin-bottom: 10px;">Latest from Soochikaari</span>
+            <h2 style="font-family: 'Playfair Display', serif; color: #3d3529; font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 8px;">{{ ($isAdminView ?? false) ? 'Manage your published and draft posts' : 'Fresh stories from the studio' }}</h2>
+            <p class="blog-header-desc" style="margin: 0; max-width: 780px;">{{ ($isAdminView ?? false) ? 'Use this list to review the content currently stored in the database before you edit, publish, or unpublish a post.' : 'These posts come directly from your admin blog manager, so edits on the live server now appear here without crashing the page.' }}</p>
+        </div>
+
+        @foreach($blogs as $blog)
+        <article class="post-row {{ $loop->even ? 'flipped' : '' }}">
+            <div class="post-img">
+                <img src="{{ $blog->image ? asset('storage/' . $blog->image) : asset('images/blog/kantha.jpg') }}" alt="{{ $blog->title }}">
+            </div>
+            <div class="post-body">
+                <span class="post-tag">{{ $blog->tag ?: (($blog->published ?? false) ? 'Published Story' : 'Draft Post') }}</span>
+                <h3>{{ $blog->title }}</h3>
+                <p>{{ $blog->excerpt }}</p>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                    @if($blog->published)
+                        <a class="btn-read" href="{{ route('blog.show', $blog->slug) }}">Read More</a>
+                    @endif
+                    @if($isAdminView ?? false)
+                        <a class="btn-read" style="background:#d4956a;" href="{{ route('admin.blog.edit', $blog) }}">Edit Post</a>
+                    @endif
+                </div>
+            </div>
+        </article>
+        @endforeach
+    </section>
+    @endif
 
     <section class="popular-section">
         <h2>Popular Posts</h2>

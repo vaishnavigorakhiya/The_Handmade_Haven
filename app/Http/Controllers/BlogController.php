@@ -24,15 +24,19 @@ class BlogController extends Controller
             ->latest()
             ->paginate(9);
 
-        return view('admin.blog.index', compact('blogs'));
-    }
+        return view('blog', [
+            'blogs' => $blogs,
+            'isAdminView' => false,
+        ]);    }
 
     public function index()
     {
         $blogs = Blog::latest()->paginate(15);
 
-        return view('admin.blog.index', compact('blogs'));
-    }
+        return view('blog', [
+            'blogs' => $blogs,
+            'isAdminView' => true,
+        ]);    }
 
     public function create()
     {
@@ -62,7 +66,7 @@ class BlogController extends Controller
 
     public function edit(Blog $blog)
     {
-        return view('admin.blog.edit', compact('blog'));
+        return view('admin.blog.create', compact('blog'));
     }
 
     public function update(Request $request, Blog $blog)

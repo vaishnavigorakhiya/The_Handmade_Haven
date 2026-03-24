@@ -14,6 +14,8 @@ class ContactController extends Controller
         return view('contact.index', [
             'contactEmail' => config('mail.from.address'),
             'contactName' => config('mail.from.name', config('app.name')),
+            'adminContactEmail' => config('mail.contact_recipient.address', config('mail.from.address')),
+
         ]);    
     }
 
@@ -23,14 +25,14 @@ class ContactController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
-            'message' => 'required|string|max:2000',
+            'message' => ['required', 'string', 'max:2000'],
         ]);
 
         $contact = Contact::create($validated);
 
         try 
         {
-            Mail::to(config('mail.from.address'))->send(new ContactInquiryMail($contact));
+            Mail::to(config('mail.contact_recipient.address', config('mail.from.address')))->send(new ContactInquiryMail($contact));       
         } 
         catch (\Exception $e) 
         {
