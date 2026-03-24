@@ -24,14 +24,14 @@ class BlogController extends Controller
             ->latest()
             ->paginate(9);
 
-        return view('blog-index', compact('blogs'));
+        return view('admin.blog.index', compact('blogs'));
     }
 
     public function index()
     {
         $blogs = Blog::latest()->paginate(15);
 
-        return view('blog-index', compact('blogs'));
+        return view('admin.blog.index', compact('blogs'));
     }
 
     public function create()
@@ -48,7 +48,7 @@ class BlogController extends Controller
 
         Blog::create($validated);
 
-        return redirect()->route('blog-index')
+        return redirect()->route('admin.blog.index')
             ->with('success', '📝 Blog post "' . $validated['title'] . '" published!');    }
 
     public function show(string $slug)
@@ -74,7 +74,7 @@ class BlogController extends Controller
 
         $blog->update($validated);
 
-        return redirect()->route('blog-index')
+        return redirect()->route('admin.blog.index')
             ->with('success', '✅ Blog post "' . $blog->fresh()->title . '" updated!');    }
 
     public function destroy(Blog $blog)
@@ -85,7 +85,7 @@ class BlogController extends Controller
         $title = $blog->title;
         $blog->delete();
 
-        return redirect()->route('blog-index')
+        return redirect()->route('admin.blog.index')
             ->with('success', '🗑 Post "' . $title . '" deleted.');
     }
 
