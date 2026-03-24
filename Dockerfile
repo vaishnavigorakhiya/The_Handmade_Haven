@@ -26,7 +26,7 @@ RUN chmod -R 777 storage bootstrap/cache
 EXPOSE 8080
 
 CMD sh -c "\
-    echo '==> Generating key...' && php artisan key:generate --force && \
+    echo '==> Generating app key...' && php artisan key:generate --force && \
     echo '==> Caching config...' && php artisan config:cache && \
     echo '==> Caching routes...' && php artisan route:cache && \
     echo '==> Caching views...' && php artisan view:cache && \
