@@ -23,8 +23,7 @@
   <div class="admin-card">
     <div class="rangoli-strip"></div>
     <div class="admin-card-header">
-      <div class="admin-card-title">{{ isset($blog) ? '✏ Edit: ' . Str::limit($blog->title,40) : '✍ Write New Post' }}</div>
-    </div>
+      <div class="admin-card-title">{{ isset($blog) ? '✏ Edit: ' . \Illuminate\Support\Str::limit($blog->title,40) : '✍ Write New Post' }}</div>    </div>
     <div style="padding:24px;">
       <form
         action="{{ isset($blog) ? route('admin.blog.update', $blog) : route('admin.blog.store') }}"

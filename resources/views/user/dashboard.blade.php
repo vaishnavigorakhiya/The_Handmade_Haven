@@ -134,7 +134,7 @@
                 <td>
                   <div style="font-weight:700;">{{ $order->full_name ?? Auth::user()->name }}</div>
                   @if($order->address)
-                    <div class="order-address">{{ Str::limit($order->address, 50) }}</div>
+                    <div class="order-address">{{ \Illuminate\Support\Str::limit($order->address, 50) }}</div>                  
                   @endif
                 </td>
                 <td><strong>${{ number_format($order->total, 2) }}</strong></td>

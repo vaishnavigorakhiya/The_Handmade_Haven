@@ -62,7 +62,7 @@
             <div class="product-category">{{ $product->category }}</div>
             <div class="product-name">{{ $product->name }}</div>
             <div class="product-desc">
-                {{ Str::limit($product->description, 80) }}
+                {{ \Illuminate\Support\Str::limit($product->description, 80) }}            
             </div>
             <div class="product-footer">
                 <div class="product-price">

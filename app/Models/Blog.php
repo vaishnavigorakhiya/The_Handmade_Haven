@@ -21,6 +21,6 @@ class Blog extends Model
 
     public function getExcerptAttribute(): string
     {
-        return \Str::limit(strip_tags($this->body), 120);
+        return \Illuminate\Support\Str::limit(strip_tags($this->body), 120);    
     }
 }
