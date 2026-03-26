@@ -94,6 +94,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/blog/{blog}',          [BlogController::class, 'destroy'])->name('blog.destroy');
     Route::patch('/blog/{blog}/toggle',    [BlogController::class, 'togglePublish'])->name('blog.toggle');
 
+    Route::get('/orders', function() {
+    $orders = \App\Models\Order::with('user','items.product')->latest()->paginate(20);
+    return view('admin.orders.index', compact('orders'));})->name('orders.index');
+
+    Route::patch('/orders/{order}/status', function(\Illuminate\Http\Request $request, \App\Models\Order $order) {
+    $request->validate(['status' => 'required|in:placed,processing,shipped,delivered']);
+    $timeline = $order->status_timeline ?? [];
+    $timeline[$request->status] = now()->toDateTimeString();
+    $order->update(['status' => $request->status, 'status_timeline' => $timeline]);
+    return back()->with('success', 'Order #'.$order->id.' status updated to '.ucfirst($request->status).'.');})->name('orders.status');
+
 
 });
 

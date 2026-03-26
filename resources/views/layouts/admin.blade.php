@@ -240,7 +240,7 @@ html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color
 
       <span class="sidebar-nav-label">Content</span>
       <a class="sidebar-nav-item {{ request()->routeIs('admin.blog*') ? 'active' : '' }}"
-         href="#">
+         href="{{ route('admin.blog.index') }}">
         <span class="sidebar-nav-icon">📝</span> Blog Posts
       </a>
 

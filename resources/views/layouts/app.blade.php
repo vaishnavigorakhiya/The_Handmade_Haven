@@ -134,9 +134,7 @@
     <div>Soochikaari<span class="nav-logo-tag">The Art of Indian Embroidery</span></div>
   </a>
   <div class="nav-links">
-    <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
-    <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
-    {{-- Search Form --}}
+        {{-- Search Form --}}
     <form action="{{ route('search') }}" method="GET"
           style="display:flex; align-items:center; gap:0; margin: 0 8px;">
         <input
@@ -171,6 +169,8 @@
             🔍
         </button>
     </form>
+    <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+    <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
     <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
     <a class="nav-btn {{ request()->routeIs('blog.*') || request()->routeIs('blog.index') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
     <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a>

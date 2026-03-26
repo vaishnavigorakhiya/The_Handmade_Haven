@@ -17,7 +17,7 @@
       <div class="admin-section-tag">📝 Content</div>
       <div class="admin-page-title">{{ isset($blog) ? 'Edit Post' : 'New Post' }}</div>
     </div>
-    <a href="#" class="sec-btn">← Back to posts</a>
+    <a href="{{ route('admin.blog.index') }}" class="sec-btn">← Back to posts</a>
   </div>
 
   <div class="admin-card">
@@ -120,7 +120,7 @@
           <button type="button" class="form-submit" onclick="validateBlogForm()">
             {{ isset($blog) ? '💾 Save Changes' : '🌸 Publish Post' }}
           </button>
-          <a href="#"
+          <a href="{{ route('admin.blog.index') }}"
              style="padding:12px 26px;background:white;border:2.5px solid var(--dark);border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--dark);text-decoration:none;color:var(--dark);display:inline-block;">
             Cancel
           </a>

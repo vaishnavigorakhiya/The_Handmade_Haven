@@ -33,7 +33,7 @@ class BlogController extends Controller
     {
         $blogs = Blog::latest()->paginate(15);
 
-        return view('blog', [
+        return view('admin.blog.index', [
             'blogs' => $blogs,
             'isAdminView' => true,
         ]);    }

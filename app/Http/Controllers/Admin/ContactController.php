@@ -11,13 +11,13 @@ class ContactController extends Controller
      public function index()
     {
         $contacts = Contact::latest()->paginate(15);
-        return view('admin.contacts.index', compact('contacts'));
+        return view('admin.contact.index', compact('contacts'));
     }
 
     public function show(Contact $contact)
     {
         $contact->update(['status' => 'read']);
-        return view('admin.contacts.show', compact('contact'));
+        return view('admin.contact.show', compact('contact'));
     }
 
     public function updateStatus(Request $request, Contact $contact)
@@ -30,6 +30,6 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
-        return redirect()->route('admin.contacts.index')->with('success', 'Contact inquiry deleted.');
+        return redirect()->route('admin.contact.index')->with('success', 'Contact inquiry deleted.');
     }
 }

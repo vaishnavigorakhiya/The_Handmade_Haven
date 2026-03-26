@@ -1,67 +1,69 @@
-@extends('layouts.app')
-
-@section('title', 'User Details')
+@extends('layouts.admin')
+@section('title', 'User #' . $user->id)
+@section('page-name', 'User Detail')
 
 @section('content')
-<div class="p-6 max-w-2xl mx-auto">
-    <div class="flex items-center gap-3 mb-6">
-        <a href="{{ route('admin.users.index') }}" class="text-gray-400 hover:text-gray-700 text-sm">← Back</a>
-        <h1 class="text-2xl font-bold text-gray-800">👤 User #{{ $user->id }}</h1>
-    </div>
 
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-4">{{ session('success') }}</div>
-    @endif
-
-    <div class="bg-white rounded-2xl shadow p-6 space-y-5">
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Name</p>
-                <p class="text-gray-800 font-medium">{{ $user->name }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Status</p>
-                @if($user->is_active)
-                    <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>
-                @else
-                    <span class="px-2 py-1 bg-red-100 text-red-500 rounded-full text-xs">Inactive</span>
-                @endif
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Email</p>
-                <p class="text-gray-700 text-sm">{{ $user->email }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Phone</p>
-                <p class="text-gray-700 text-sm">{{ $user->phone ?? '—' }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Joined</p>
-                <p class="text-gray-500 text-sm">{{ $user->created_at->format('d M Y, h:i A') }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Total Orders</p>
-                <p class="text-gray-700 text-sm font-semibold">{{ $user->orders()->count() ?? 0 }}</p>
-            </div>
-        </div>
-
-        <div class="flex gap-3 pt-2">
-            <form action="{{ route('admin.users.toggle', $user) }}" method="POST">
-                @csrf @method('PATCH')
-                <button class="text-sm px-4 py-2 rounded-xl font-medium
-                    {{ $user->is_active ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">
-                    {{ $user->is_active ? '🔒 Deactivate User' : '✅ Activate User' }}
-                </button>
-            </form>
-
-            <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                  onsubmit="return confirm('Are you sure you want to delete this user?')">
-                @csrf @method('DELETE')
-                <button class="text-sm bg-red-100 text-red-600 px-4 py-2 rounded-xl hover:bg-red-200 font-medium">
-                    🗑 Delete User
-                </button>
-            </form>
-        </div>
-    </div>
+<div class="admin-page-header">
+  <div>
+    <div class="admin-section-tag">👥 People</div>
+    <div class="admin-page-title">User #{{ $user->id }}</div>
+  </div>
+  <a href="{{ route('admin.users.index') }}" class="sec-btn">← Back</a>
 </div>
+
+<div style="max-width:680px;">
+  <div class="admin-card">
+    <div class="rangoli-strip"></div>
+    <div style="padding:26px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Name</div>
+          <div style="font-weight:700;font-size:0.95rem;">{{ $user->name }}</div>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Status</div>
+          <span class="pill {{ $user->is_active ? 'pill-green' : 'pill-red' }}">
+            {{ $user->is_active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Email</div>
+          <div style="font-weight:700;font-size:0.9rem;">{{ $user->email ?? '—' }}</div>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Phone</div>
+          <div style="font-weight:700;font-size:0.9rem;">{{ $user->phone ?? '—' }}</div>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Joined</div>
+          <div style="font-weight:600;font-size:0.85rem;color:var(--mid);">
+            {{ $user->created_at->format('d M Y, h:i A') }}
+          </div>
+        </div>
+        <div>
+          <div class="form-label" style="margin-bottom:5px;">Total Orders</div>
+          <div style="font-weight:700;font-size:0.9rem;">{{ $user->orders()->count() }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <form action="{{ route('admin.users.toggle', $user) }}" method="POST">
+          @csrf @method('PATCH')
+          <button class="admin-add-btn" style="padding:10px 20px;font-size:0.83rem;
+            {{ $user->is_active ? 'background:var(--p2)' : '' }}">
+            {{ $user->is_active ? '🔒 Deactivate' : '✅ Activate' }}
+          </button>
+        </form>
+        <button class="act-btn act-del" style="padding:10px 16px;"
+          onclick="openDel(
+            '{{ route('admin.users.destroy', $user) }}',
+            'Delete User?',
+            'Delete {{ addslashes($user->name) }}? This cannot be undone.'
+          )">🗑 Delete User</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
