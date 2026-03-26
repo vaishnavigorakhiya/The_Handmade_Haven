@@ -6,7 +6,9 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -21,7 +23,18 @@ class ProductController extends Controller
 
     public function home()
     {
-        $featured = Product::where('featured', true)->take(4)->get();
+        try 
+        {
+            $featured = Product::query()->where('featured', true)->take(4)->get();
+        } 
+        catch (Throwable $exception) 
+        {
+            Log::error('Homepage failed to load featured products.', [
+                'exception' => $exception,
+            ]);
+
+            $featured = collect();
+        }       
         return view('home', compact('featured'));
     }
 
