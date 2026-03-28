@@ -134,81 +134,88 @@
     <div>Soochikaari<span class="nav-logo-tag">The Art of Indian Embroidery</span></div>
   </a>
   <div class="nav-links">
-        {{-- Search Form --}}
+    {{-- Search always visible --}}
     <form action="{{ route('search') }}" method="GET"
           style="display:flex; align-items:center; gap:0; margin: 0 8px;">
-        <input
-            type="text"
-            name="q"
-            value="{{ request('q') }}"
+        <input type="text" name="q" value="{{ request('q') }}"
             placeholder="Search products…"
-            style="padding: 7px 14px;
-                  border: 1.5px solid var(--border);
-                  border-right: none;
-                  border-radius: 50px 0 0 50px;
-                  font-family: 'Nunito', sans-serif;
-                  font-size: 0.82rem;
-                  font-weight: 600;
-                  background: var(--bg);
-                  outline: none;
-                  width: 180px;
-                  color: var(--dark);"
+            style="padding: 7px 14px; border: 1.5px solid var(--border);
+                  border-right: none; border-radius: 50px 0 0 50px;
+                  font-family: 'Nunito', sans-serif; font-size: 0.82rem;
+                  font-weight: 600; background: var(--bg); outline: none;
+                  width: 180px; color: var(--dark);"
             onfocus="this.style.borderColor='var(--p1)'"
-            onblur="this.style.borderColor='var(--border)'"
-        />
+            onblur="this.style.borderColor='var(--border)'" />
         <button type="submit"
-                style="padding: 7px 13px;
-                      background: var(--p1);
-                      color: white;
-                      border: 1.5px solid var(--p1);
-                      border-radius: 0 50px 50px 0;
-                      font-size: 0.85rem;
-                      cursor: pointer;
-                      font-family: 'Nunito', sans-serif;
-                      font-weight: 700;">
+                style="padding: 7px 13px; background: var(--p1); color: white;
+                      border: 1.5px solid var(--p1); border-radius: 0 50px 50px 0;
+                      font-size: 0.85rem; cursor: pointer;
+                      font-family: 'Nunito', sans-serif; font-weight: 700;">
             🔍
         </button>
     </form>
-    <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
-    <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
-    <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
-    <a class="nav-btn {{ request()->routeIs('blog.*') || request()->routeIs('blog.index') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
-    <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a>
-    <a class="nav-btn cart-btn" href="{{ route('cart') }}">
-      🛒 Cart
-      @php $cartCount = collect(session('cart', []))->sum(); @endphp
-      @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
-    </a>
+
     @auth
-      @if(Auth::user()->isAdmin())
-        <a class="nav-btn admin-btn {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">⚙ Admin</a>
-        <a class="nav-btn {{ request()->routeIs('admin.users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">👥 Users</a>
-        <a class="nav-btn {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
-          📬 Contacts
-          @php
-            try 
-            {
-              $newContacts = \App\Models\Contact::where('status', 'new')->count();
-            } 
-            catch (\Exception $e) 
-            {
-              $newContacts = 0;
-            }            
-          @endphp
-          @if($newContacts > 0)
-            <span class="cart-badge">{{ $newContacts }}</span>
-          @endif
-        </a>
-      @else
-        <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">👤 My Account</a>
-      @endif
-      <form method="POST" action="{{ route('logout') }}" style="display:inline">
-        @csrf
-        <button type="submit" class="nav-btn">Sign Out</button>
-      </form>
+        @if(Auth::user()->isAdmin())
+            {{-- ── ADMIN NAV ── --}}
+            <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+            <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
+            <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
+            <a class="nav-btn {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
+            <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a>
+            <a class="nav-btn cart-btn" href="{{ route('cart') }}">
+                🛒 Cart
+                @php $cartCount = collect(session('cart', []))->sum(); @endphp
+                @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+            </a>
+            <a class="nav-btn admin-btn {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">⚙ Admin</a>
+            <a class="nav-btn {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
+                📬 Contacts
+                @php
+                    try { $newContacts = \App\Models\Contact::where('status', 'new')->count(); }
+                    catch (\Exception $e) { $newContacts = 0; }
+                @endphp
+                @if($newContacts > 0)<span class="cart-badge">{{ $newContacts }}</span>@endif
+            </a>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                @csrf
+                <button type="submit" class="nav-btn">Sign Out</button>
+            </form>
+
+        @else
+            {{-- ── CUSTOMER NAV (logged in) — minimal ── --}}
+            <a class="nav-btn cart-btn" href="{{ route('cart') }}">
+                🛒 Cart
+                @php $cartCount = collect(session('cart', []))->sum(); @endphp
+                @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+            </a>
+            <a class="nav-btn {{ request()->routeIs('wishlist') ? 'active' : '' }}" href="{{ route('wishlist') }}"
+               style="background:var(--bg5);border-color:var(--p5);">
+                ❤️ Wishlist
+                @php $wCount = Auth::user()->wishlists()->count(); @endphp
+                @if($wCount > 0)<span class="cart-badge" style="background:var(--p1);">{{ $wCount }}</span>@endif
+            </a>
+            <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">👤 My Account</a>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                @csrf
+                <button type="submit" class="nav-btn">Sign Out</button>
+            </form>
+        @endif
+
     @else
-      <button class="nav-btn login-btn" onclick="openLoginModal()">🌸 Login / Join</button>
-    @endauth
+        {{-- ── GUEST NAV ── --}}
+        <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+        <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}">Shop</a>
+        <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About</a>
+        <a class="nav-btn {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
+        <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a>
+        <a class="nav-btn cart-btn" href="{{ route('cart') }}">
+            🛒 Cart
+            @php $cartCount = collect(session('cart', []))->sum(); @endphp
+            @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+        </a>
+        <button class="nav-btn login-btn" onclick="openLoginModal()">🌸 Login / Join</button>
+    @endguest
   </div>
   <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -216,61 +223,76 @@
 </nav>
 
 <div class="nav-drawer" id="navDrawer">
-  <form action="{{ route('search') }}" method="GET"
-      style="display:flex; gap:0; width:100%;">
+  <form action="{{ route('search') }}" method="GET" style="display:flex; gap:0; width:100%;">
     <input type="text" name="q" value="{{ request('q') }}"
-           placeholder="Search products…"
-           style="flex:1; padding:11px 16px; border:1.5px solid var(--border);
-                  border-right:none; border-radius:50px 0 0 50px;
-                  font-family:'Nunito',sans-serif; font-size:0.95rem;
-                  font-weight:600; background:var(--bg); outline:none;" />
-    <button type="submit"
-            style="padding:11px 16px; background:var(--p1); color:white;
-                   border:1.5px solid var(--p1); border-radius:0 50px 50px 0;
-                   font-size:1rem; cursor:pointer;">🔍</button>
+          placeholder="Search products…"
+          style="flex:1; padding:11px 16px; border:1.5px solid var(--border);
+          border-right:none; border-radius:50px 0 0 50px;
+          font-family:'Nunito',sans-serif; font-size:0.95rem;
+          font-weight:600; background:var(--bg); outline:none;" />
+    <button type="submit" style="padding:11px 16px; background:var(--p1); color:white; border:1.5px solid var(--p1); border-radius:0 50px 50px 0;font-size:1rem; cursor:pointer;">🔍</button>
   </form>
-  <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
-  <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🪡 Shop</a>
-  <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
-  <a class="nav-btn {{ request()->routeIs('blog.*') || request()->routeIs('blog.index') ? 'active' : '' }}" href="{{ route('blog.index') }}" onclick="closeMobileNav()">📝 Blog</a>
-  <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}" onclick="closeMobileNav()">📬 Contact</a>
-  <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
-    🛒 Cart
-    @php $cartCount = collect(session('cart', []))->sum(); @endphp
-    @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
-  </a>
+
   @auth
     @if(Auth::user()->isAdmin())
-      <a class="nav-btn admin-btn" href="{{ route('admin.dashboard') }}" onclick="closeMobileNav()">⚙ Admin Dashboard</a>
-      <a class="nav-btn" href="{{ route('admin.users.index') }}" onclick="closeMobileNav()">👥 Users</a>
-      <a class="nav-btn" href="{{ route('admin.contacts.index') }}" onclick="closeMobileNav()">
-        📬 Contacts
-        @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
-        @if($newContacts > 0)
-          <span class="cart-badge">{{ $newContacts }}</span>
+      {{-- Admin mobile nav --}}
+      <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
+      <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🪡 Shop</a>
+      <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
+      <a class="nav-btn {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}" onclick="closeMobileNav()">📝 Blog</a>
+      <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}" onclick="closeMobileNav()">📬 Contact</a>
+      <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
+                🛒 Cart
+                @php $cartCount = collect(session('cart', []))->sum(); @endphp
+                @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+            </a>
+            <a class="nav-btn admin-btn" href="{{ route('admin.dashboard') }}" onclick="closeMobileNav()">⚙ Admin Dashboard</a>
+            <a class="nav-btn" href="{{ route('admin.contacts.index') }}" onclick="closeMobileNav()">
+                📬 Contacts
+                @php $newContacts = \App\Models\Contact::where('status','new')->count(); @endphp
+                @if($newContacts > 0)<span class="cart-badge">{{ $newContacts }}</span>@endif
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="nav-btn" style="width:100%;justify-content:center;">Sign Out</button>
+            </form>
+
+        @else
+            {{-- Customer mobile nav (logged in) — minimal --}}
+            <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
+                🛒 Cart
+                @php $cartCount = collect(session('cart', []))->sum(); @endphp
+                @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+            </a>
+            <a class="nav-btn {{ request()->routeIs('wishlist') ? 'active' : '' }}"
+               href="{{ route('wishlist') }}" onclick="closeMobileNav()"
+               style="background:var(--bg5);border-color:var(--p5);">
+                ❤️ Wishlist
+                @php $wCount = Auth::user()->wishlists()->count(); @endphp
+                @if($wCount > 0)<span class="cart-badge" style="background:var(--p1);">{{ $wCount }}</span>@endif
+            </a>
+            <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"
+               href="{{ route('user.dashboard') }}" onclick="closeMobileNav()">👤 My Account</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="nav-btn" style="width:100%;justify-content:center;">Sign Out</button>
+            </form>
         @endif
-      </a>
+
     @else
-      <a class="nav-btn {{ request()->routeIs('wishlist') ? 'active' : '' }}"
-        href="{{ route('wishlist') }}">
-          ❤️ Wishlist
-          @php
-              $wCount = Auth::user()->wishlists()->count();
-          @endphp
-          @if($wCount > 0)
-              <span class="cart-badge">{{ $wCount }}</span>
-          @endif
-      </a>
-      <a class="nav-btn {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"
-        href="{{ route('user.dashboard') }}">👤 My Account</a>
-    @endif
-    <form method="POST" action="{{ route('logout') }}">
-      @csrf
-      <button type="submit" class="nav-btn" style="width:100%;justify-content:center;">Sign Out</button>
-    </form>
-  @else
-    <button class="nav-btn login-btn" onclick="openLoginModal(); closeMobileNav();">🌸 Login / Join</button>
-  @endauth
+        {{-- Guest mobile nav --}}
+        <a class="nav-btn {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" onclick="closeMobileNav()">🏠 Home</a>
+        <a class="nav-btn {{ request()->routeIs('shop') ? 'active' : '' }}" href="{{ route('shop') }}" onclick="closeMobileNav()">🪡 Shop</a>
+        <a class="nav-btn {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}" onclick="closeMobileNav()">📖 About</a>
+        <a class="nav-btn {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}" onclick="closeMobileNav()">📝 Blog</a>
+        <a class="nav-btn {{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}" onclick="closeMobileNav()">📬 Contact</a>
+        <a class="nav-btn cart-btn" href="{{ route('cart') }}" onclick="closeMobileNav()">
+            🛒 Cart
+            @php $cartCount = collect(session('cart', []))->sum(); @endphp
+            @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
+        </a>
+        <button class="nav-btn login-btn" onclick="openLoginModal(); closeMobileNav();">🌸 Login / Join</button>
+  @endguest
 </div>
 
 @if(session('success'))
